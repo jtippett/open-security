@@ -1195,11 +1195,11 @@ export async function main(
         );
       },
     });
-  const cli = Cli.create("codex-security", {
+  const cli = Cli.create("open-security", {
     description: "Run, validate, patch, and export Codex Security findings.",
     version: VERSION,
     mcp: {
-      command: "npx --yes not-codex-security --mcp",
+      command: "npx --yes open-security --mcp",
       instructions:
         "Use info for read-only SDK metadata. Scans and other state-changing commands are CLI-only because the MCP transport cannot cancel active commands.",
     },
@@ -1577,7 +1577,7 @@ export async function main(
       ],
       hint:
         "CSV example:\n" +
-        "  codex-security bulk-scan repositories.csv " +
+        "  open-security bulk-scan repositories.csv " +
         "--output-dir /path/outside/repositories/results " +
         "--workers 4 --max-attempts 3",
       output: z.record(z.string(), z.unknown()).optional(),
@@ -1978,7 +1978,7 @@ export async function main(
           codexVersion: CODEX_EXECUTABLE_VERSION,
           codexSdkVersion: CODEX_SDK_VERSION,
           ...scanModelConfiguration(DEFAULT_CODEX_CONFIG),
-          nextStep: "codex-security scan . --dry-run",
+          nextStep: "open-security scan . --dry-run",
         };
       },
     });
@@ -2666,7 +2666,7 @@ export function skillCommandFailure(
       detail,
     )
   ) {
-    return "Authentication failed. Run codex-security login or check the configured API key.";
+    return "Authentication failed. Run open-security login or check the configured API key.";
   }
   if (
     /403|model.not.found|model.*access|access.*model|permission/iu.test(detail)
@@ -3556,7 +3556,7 @@ function scanFailureMessage(
             "Your ChatGPT sign-in was not used. " +
             "Retry with '--auth chatgpt' or provide a valid API key."
         : "Authentication failed using stored ChatGPT credentials. " +
-            "Sign in again with 'codex-security login' or provide a valid API key.";
+            "Sign in again with 'open-security login' or provide a valid API key.";
     case "forbidden":
       if (authentication?.method === "aws_credentials") {
         return (

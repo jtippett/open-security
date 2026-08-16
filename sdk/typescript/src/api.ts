@@ -612,8 +612,8 @@ export class CodexSecurity {
         authentication.method !== "aws_credentials"
       ) {
         throw new AuthenticationRequiredError(
-          "No credentials were found. Run 'codex-security login', use " +
-            "'codex-security login --device-auth' on a remote or headless machine, or set " +
+          "No credentials were found. Run 'open-security login', use " +
+            "'open-security login --device-auth' on a remote or headless machine, or set " +
             "OPENAI_API_KEY or CODEX_API_KEY for CI.",
         );
       }

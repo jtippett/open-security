@@ -100,7 +100,7 @@ const required = [
   "package/package.json",
   "package/README.md",
   "package/LICENSE",
-  "package/bin/codex-security.mjs",
+  "package/bin/open-security.mjs",
   "package/dist/index.js",
   "package/dist/index.d.ts",
   "package/dist/cli.js",
@@ -156,7 +156,7 @@ const allowedRoot = new Set([
   "package/package.json",
   "package/README.md",
   "package/LICENSE",
-  "package/bin/codex-security.mjs",
+  "package/bin/open-security.mjs",
 ]);
 const distFiles = new Set(
   [
@@ -224,7 +224,7 @@ if (
   throw new Error("npm tarball contains an invalid tar entry.");
 }
 const launcherPermissions =
-  listingLines[entries.indexOf("package/bin/codex-security.mjs")]?.split(
+  listingLines[entries.indexOf("package/bin/open-security.mjs")]?.split(
     /\s/u,
     1,
   )[0] ?? "";
@@ -235,7 +235,7 @@ const packageJson = JSON.parse(
   archiveFile("package/package.json").toString("utf8"),
 );
 if (
-  packageJson.name !== "not-codex-security" /* open-models fork */ ||
+  packageJson.name !== "open-security" /* open-models fork */ ||
   packageJson.license !== "Apache-2.0"
 ) {
   throw new Error("npm package does not contain the expected public metadata.");

@@ -39,16 +39,26 @@ Every fork hunk in an upstream file is marked with a comment containing
 | `sdk/typescript/src/cli.ts`                                                                                 | imports; `PROVIDER_OPTION` is optional with the fork default in its description; `SKILL_PROVIDER_OPTION` and `--provider` on `validate`/`patch`; `DEFAULT_SCAN_MODEL`; `--model` help text; the tail of `parseCodexOverrides` (default-model fallback and `applyDefaultModelProvider` call); `runSkill` forwards a registry provider to `codex exec` (`tomlInlineTable`). |
 | `sdk/typescript/src/cost.ts`                                                                                | one import and the `?? OPENROUTER_MODEL_PRICING_NANODOLLARS[...]` fallback in `estimateScanCost`.                                                                                                                                                                                                                                                                         |
 | `sdk/typescript/src/api.ts`                                                                                 | one import; `withOpenModelsGuidance(options.scanPrompt)` where `scanPrompt(...)` is built; the `repairDraftContract(...)` call immediately before `complete-scan`. Both are gated on `externalProvider !== null`, so OpenAI scans behave exactly as upstream.                                                                                                             |
-| `sdk/typescript/package.json`                                                                               | `generate:pricing` script; `name` is `not-codex-security` (the `bin` stays `codex-security`).                                                                                                                                                                                                                                                                             |
+| `sdk/typescript/package.json`                                                                               | `generate:pricing` script; `name` and `bin` are `open-security` (renamed launcher in `bin/`).                                                                                                                                                                                                                                                                             |
 | `sdk/typescript/src/index.ts`                                                                               | exports the fork's provider helpers (`applyDefaultModelProvider` and friends).                                                                                                                                                                                                                                                                                            |
 | `sdk/typescript/src/version.ts`                                                                             | `PACKAGE_NAME` is the fork name (drives update notices).                                                                                                                                                                                                                                                                                                                  |
-| `sdk/typescript/scripts/check-package.mjs`, `scripts/release-automation.mjs`                                | package-name checks accept `not-codex-security` (release automation accepts both names so its upstream tests keep passing).                                                                                                                                                                                                                                               |
+| `sdk/typescript/scripts/check-package.mjs`, `scripts/release-automation.mjs`                                | package-name checks accept `open-security` (release automation accepts both names so its upstream tests keep passing).                                                                                                                                                                                                                                                    |
 | `sdk/typescript/tests-ts/update-notice.test.ts`                                                             | expected package name and registry URLs use the fork name.                                                                                                                                                                                                                                                                                                                |
 | `sdk/typescript/tests-ts/cli.test.ts`, `tests-ts/cli-authentication.test.ts`, `tests-ts/cli-skills.test.ts` | tests that assert OpenAI-specific behaviour pass `--provider openai`; help-text strings; the `--provider openrouter` without `--model` expectation; `validate --help` now lists `--provider`.                                                                                                                                                                             |
-| `README.md`, `sdk/typescript/README.md`                                                                     | root README restructured as a fork getting-started guide; package README renamed, from-source install, SDK OpenRouter example. Expect conflicts; keep upstream's new content and re-apply the fork framing.                                                                                                                                                                |
+| `README.md`, `sdk/typescript/README.md`                                                                     | root README restructured as a fork getting-started guide; package README renamed, from-source install, SDK OpenRouter example. Expect conflicts; keep upstream's new content and re-apply the fork framing.                                                                                                                                                               |
 
 Keep it that way: when adding fork behaviour, prefer a new file, and when an
 upstream file must change, keep the hunk small, self-contained, and marked.
+
+The rename is deliberately shallow: only durable names changed (npm package,
+`bin/open-security.mjs` launcher, the CLI program name in `Cli.create`, the
+container's CLI invocations, and command names users type or docs show).
+Internal identifiers keep upstream's `codex-security` — stderr message
+prefixes, config/state paths (`~/.codex/codex-security/`,
+`CODEX_SECURITY_*`), the plugin name and its MCP server key, compose service
+names, contract document types, and the legacy pre-commit hook detection
+string. Renaming those would churn hundreds of upstream lines for no
+functional gain.
 
 ## Update procedure
 
@@ -77,7 +87,7 @@ upstream file must change, keep the hunk small, self-contained, and marked.
 
    - Codex runtime version (`@openai/codex` / `@openai/codex-sdk` in
      `package.json`): confirm OpenRouter's Responses endpoint still works with
-     the pinned Codex, e.g. `codex-security scan <small-repo> --dry-run` and one
+     the pinned Codex, e.g. `open-security scan <small-repo> --dry-run` and one
      real scan.
    - Upstream's `MODEL_PRICING_NANODOLLARS` in `cost.ts` stays authoritative
      for OpenAI models; regenerate the OpenRouter catalog:
@@ -107,13 +117,13 @@ upstream file must change, keep the hunk small, self-contained, and marked.
 
 ## Releasing
 
-Upstream publishes `@openai/codex-security`; this fork's package is named
-`not-codex-security` (the installed command is still `codex-security`). The
+Upstream publishes `@openai/codex-security`; this fork's package and installed
+command are both named `open-security`. The
 fork is not published to npm — the READMEs document a from-source install. The
 `.github/workflows` release pipeline still targets the upstream name and repo
 (`github.repository == 'openai/codex-security'` guards make it a no-op on the
 fork); `repository`/`bugs` URLs in `sdk/typescript/package.json` point at
-[jtippett/not-codex-security](https://github.com/jtippett/not-codex-security).
+[jtippett/open-security](https://github.com/jtippett/open-security).
 If the fork is ever published to npm, revisit
 `scripts/release-automation.mjs`, which currently accepts both package names.
 

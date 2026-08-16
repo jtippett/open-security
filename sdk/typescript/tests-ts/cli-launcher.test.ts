@@ -23,7 +23,7 @@ describe("CLI launcher", () => {
     try {
       const launcher = join(packageRoot, "src", "cli.ts");
       const bin =
-        process.platform === "win32" ? launcher : join(root, "codex-security");
+        process.platform === "win32" ? launcher : join(root, "open-security");
       if (process.platform !== "win32") {
         await symlink(launcher, bin);
       }
@@ -69,10 +69,10 @@ describe("CLI launcher", () => {
       join(tmpdir(), "codex-security-cli-bin-failure-"),
     );
     try {
-      const launcher = join(root, "bin", "codex-security.mjs");
+      const launcher = join(root, "bin", "open-security.mjs");
       await mkdir(join(root, "bin"), { recursive: true });
       await mkdir(join(root, "dist"), { recursive: true });
-      await copyFile(join(packageRoot, "bin", "codex-security.mjs"), launcher);
+      await copyFile(join(packageRoot, "bin", "open-security.mjs"), launcher);
       await writeFile(
         join(root, "dist", "cli.js"),
         `throw new Error(${JSON.stringify(`failed ${SYNTHETIC_CREDENTIALS}`)});\n`,
@@ -86,7 +86,7 @@ describe("CLI launcher", () => {
       expect(child.status).toBe(2);
       expect(child.stdout).toBe("");
       expect(child.stderr).toBe(
-        "codex-security: Failed to start Codex Security.\n",
+        "open-security: Failed to start Open Security.\n",
       );
     } finally {
       await rm(root, { recursive: true, force: true });
@@ -117,9 +117,9 @@ describe("CLI launcher", () => {
         'from "./api.js"',
       );
 
-      const launcher = join(installed, "bin", "codex-security.mjs");
+      const launcher = join(installed, "bin", "open-security.mjs");
       await mkdir(join(installed, "bin"), { recursive: true });
-      await copyFile(join(packageRoot, "bin", "codex-security.mjs"), launcher);
+      await copyFile(join(packageRoot, "bin", "open-security.mjs"), launcher);
       await copyFile(
         join(packageRoot, "package.json"),
         join(installed, "package.json"),
@@ -135,7 +135,7 @@ describe("CLI launcher", () => {
       const bin =
         process.platform === "win32"
           ? launcher
-          : join(binDirectory, "codex-security");
+          : join(binDirectory, "open-security");
       if (process.platform !== "win32") {
         await symlink(launcher, bin);
       }

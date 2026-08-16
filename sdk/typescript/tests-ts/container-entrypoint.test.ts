@@ -67,7 +67,7 @@ async function runEntrypoint(
 
   try {
     await writeFile(
-      join(root, "codex-security"),
+      join(root, "open-security"),
       "#!/bin/sh\nprintf '%s\\n' \"$@\"\n",
       { mode: 0o755 },
     );

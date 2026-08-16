@@ -10,7 +10,7 @@ export const CODEX_SDK_VERSION = PACKAGE_VERSIONS.sdk;
 export const CODEX_EXECUTABLE_VERSION = PACKAGE_VERSIONS.executable;
 export const BUNDLED_PLUGIN_VERSION = "0.1.20" as const;
 
-const PACKAGE_NAME = "not-codex-security"; // open-models fork: renamed package
+const PACKAGE_NAME = "open-security"; // open-models fork: renamed package
 const VERSION_PATTERN =
   /^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?(?:\+[0-9A-Za-z.-]+)?$/u;
 

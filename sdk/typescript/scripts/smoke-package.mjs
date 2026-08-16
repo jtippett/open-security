@@ -350,13 +350,13 @@ try {
   );
 
   assert.equal(
-    typeof installedManifest.bin?.["codex-security"],
+    typeof installedManifest.bin?.["open-security"],
     "string",
-    "Installed package must declare the codex-security launcher.",
+    "Installed package must declare the open-security launcher.",
   );
   const launcher = resolve(
     installedRoot,
-    installedManifest.bin["codex-security"],
+    installedManifest.bin["open-security"],
   );
   assert.ok(
     launcher.startsWith(`${installedRoot}${sep}`),
@@ -372,12 +372,12 @@ try {
     consumer,
     "node_modules",
     ".bin",
-    process.platform === "win32" ? "codex-security.cmd" : "codex-security",
+    process.platform === "win32" ? "open-security.cmd" : "open-security",
   );
   assert.equal(
     (await stat(shim)).isFile(),
     true,
-    "npm must create the published codex-security executable shim.",
+    "npm must create the published open-security executable shim.",
   );
 
   function runInstalledCli(argument) {
@@ -397,7 +397,7 @@ try {
   assert.equal(version.trim(), packageManifest.version);
 
   const help = runInstalledCli("--help");
-  assert.match(help, /Usage: codex-security\b/u);
+  assert.match(help, /Usage: open-security\b/u);
 
   await smokeNestedDeepScanWorker(installedRoot, consumer);
 

@@ -1,5 +1,5 @@
 {
-  "name": "not-codex-security",
+  "name": "open-security",
   "version": "0.1.12",
   "description": "TypeScript SDK and CLI for Codex Security",
   "license": "Apache-2.0",
@@ -7,10 +7,10 @@
   "homepage": "https://developers.openai.com/codex/security",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jtippett/not-codex-security.git",
+    "url": "https://github.com/jtippett/open-security.git",
     "directory": "sdk/typescript"
   },
-  "bugs": "https://github.com/jtippett/not-codex-security/issues",
+  "bugs": "https://github.com/jtippett/open-security/issues",
   "type": "module",
   "engines": {
     "node": "^22.13.0 || ^24.0.0 || ^26.0.0"
@@ -26,7 +26,7 @@
     }
   },
   "bin": {
-    "codex-security": "./bin/codex-security.mjs"
+    "open-security": "./bin/open-security.mjs"
   },
   "files": [
     "bin",

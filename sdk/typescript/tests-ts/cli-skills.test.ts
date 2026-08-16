@@ -95,7 +95,7 @@ describe("CLI skill commands", () => {
           ),
         ).toBe(0);
         expect(help.text()).toContain(
-          `Usage: codex-security ${command} <${argument}>`,
+          `Usage: open-security ${command} <${argument}>`,
         );
         expect(help.text()).toContain(
           "--effort <minimal|low|medium|high|xhigh|max>",

@@ -89,7 +89,7 @@ describe("CLI", () => {
     const root = capture();
     const stderr = capture();
     expect(await main([], root.stream, stderr.stream, dependencies())).toBe(0);
-    expect(root.text()).toContain("Usage: codex-security <command>");
+    expect(root.text()).toContain("Usage: open-security <command>");
     expect(root.text()).toContain("bulk-scan");
     expect(root.text()).toContain("install-hook");
     expect(root.text()).not.toContain("multiscan");
@@ -187,27 +187,27 @@ describe("CLI", () => {
     expect(
       await main(["--llms"], manifest.stream, capture().stream, dependencies()),
     ).toBe(0);
-    expect(manifest.text()).toContain("codex-security scan [repository]");
+    expect(manifest.text()).toContain("open-security scan [repository]");
     expect(manifest.text()).toContain(
-      "codex-security install-hook [repository]",
+      "open-security install-hook [repository]",
     );
-    expect(manifest.text()).toContain("codex-security bulk-scan [input]");
-    expect(manifest.text()).toContain("codex-security export <scanDir>");
-    expect(manifest.text()).toContain("codex-security validate <findings...>");
-    expect(manifest.text()).toContain("codex-security patch <issues...>");
+    expect(manifest.text()).toContain("open-security bulk-scan [input]");
+    expect(manifest.text()).toContain("open-security export <scanDir>");
+    expect(manifest.text()).toContain("open-security validate <findings...>");
+    expect(manifest.text()).toContain("open-security patch <issues...>");
     expect(manifest.text()).toContain(
-      "codex-security findings false-positive <occurrenceId>",
+      "open-security findings false-positive <occurrenceId>",
     );
-    expect(manifest.text()).toContain("codex-security scans list [repository]");
-    expect(manifest.text()).toContain("codex-security scans show <scanId>");
-    expect(manifest.text()).toContain("codex-security scans rerun <scanId>");
+    expect(manifest.text()).toContain("open-security scans list [repository]");
+    expect(manifest.text()).toContain("open-security scans show <scanId>");
+    expect(manifest.text()).toContain("open-security scans rerun <scanId>");
     expect(manifest.text()).toContain(
-      "codex-security scans match [beforeId] [afterId]",
+      "open-security scans match [beforeId] [afterId]",
     );
     expect(manifest.text()).toContain(
-      "codex-security scans compare <beforeId> <afterId>",
+      "open-security scans compare <beforeId> <afterId>",
     );
-    expect(manifest.text()).toContain("codex-security info");
+    expect(manifest.text()).toContain("open-security info");
 
     const completions = capture();
     expect(
@@ -1059,7 +1059,7 @@ describe("CLI", () => {
       codexSdkVersion: CODEX_SDK_VERSION,
       model: "gpt-5.6-sol",
       reasoningEffort: "xhigh",
-      nextStep: "codex-security scan . --dry-run",
+      nextStep: "open-security scan . --dry-run",
     });
   }, 30_000);
 
@@ -1377,7 +1377,7 @@ describe("CLI", () => {
     expect(JSON.parse(stdout.text())).toEqual({
       model: "gpt-5.6-sol",
       reasoningEffort: "xhigh",
-      nextStep: "codex-security scan . --dry-run",
+      nextStep: "open-security scan . --dry-run",
     });
     expect(stderr.text()).toBe("");
   });
@@ -1418,15 +1418,13 @@ describe("CLI", () => {
         },
       );
       expect(child.status).toBe(0);
-      expect(child.stdout).toContain(
-        "command: npx --yes not-codex-security --mcp",
-      );
+      expect(child.stdout).toContain("command: npx --yes open-security --mcp");
       const config = JSON.parse(
         await readFile(join(home, ".config", "amp", "settings.json"), "utf8"),
       );
-      expect(config["amp.mcpServers"]["codex-security"]).toEqual({
+      expect(config["amp.mcpServers"]["open-security"]).toEqual({
         command: "npx",
-        args: ["--yes", "not-codex-security", "--mcp"],
+        args: ["--yes", "open-security", "--mcp"],
       });
     } finally {
       await rm(home, { recursive: true, force: true });
@@ -2123,7 +2121,7 @@ describe("CLI", () => {
     expect(
       await main(["export", "--help"], stdout.stream, stderr.stream, deps),
     ).toBe(0);
-    expect(stdout.text()).toContain("Usage: codex-security export <scanDir>");
+    expect(stdout.text()).toContain("Usage: open-security export <scanDir>");
     expect(stdout.text()).toContain("--export-format <csv|json|sarif>");
     expect(stdout.text()).toContain("--source-root <string>");
     expect(stdout.text()).not.toContain("--format {sarif}");
@@ -2148,7 +2146,7 @@ describe("CLI", () => {
         dependencies(),
       ),
     ).toBe(0);
-    expect(help.text()).toContain("Usage: codex-security scan [repository]");
+    expect(help.text()).toContain("Usage: open-security scan [repository]");
     expect(help.text()).toContain("--verbose");
     expect(help.text()).toContain("--path <array>");
     expect(help.text()).toContain("--max-cost <number>");
@@ -2180,14 +2178,12 @@ describe("CLI", () => {
       "features.multi_agent_v2.max_concurrent_threads_per_session=4",
     );
     expect(help.text()).toContain("default: Codex Security state");
+    expect(help.text()).toContain("open-security scan . --model gpt-5.6-terra");
     expect(help.text()).toContain(
-      "codex-security scan . --model gpt-5.6-terra",
-    );
-    expect(help.text()).toContain(
-      "codex-security scan . --model gpt-5.6-terra --effort high",
+      "open-security scan . --model gpt-5.6-terra --effort high",
     );
     expect(help.text()).not.toContain("openai:gpt");
-    expect(help.text()).not.toContain("codex-security scan . --path src,tests");
+    expect(help.text()).not.toContain("open-security scan . --path src,tests");
     expect(help.text()).toContain("--format <toon|json|yaml|md|jsonl>");
   });
 
@@ -2232,7 +2228,7 @@ describe("CLI", () => {
       "Python interpreter (default: PYTHON or automatic discovery).",
     );
     expect(help.text()).toContain(
-      "codex-security bulk-scan repositories.csv " +
+      "open-security bulk-scan repositories.csv " +
         "--output-dir /path/outside/repositories/results " +
         "--workers 4 --max-attempts 3",
     );
@@ -2740,7 +2736,7 @@ describe("CLI", () => {
         dependencies(),
       ),
     ).toBe(0);
-    expect(stdout.text()).toContain("Usage: codex-security scan [repository]");
+    expect(stdout.text()).toContain("Usage: open-security scan [repository]");
     expect(stderr.text()).toBe("");
   });
 

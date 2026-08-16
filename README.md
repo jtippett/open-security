@@ -1,4 +1,4 @@
-# not-codex-security
+# open-security
 
 Security scanning for your code, powered by open-weight models.
 
@@ -26,8 +26,8 @@ sign-in. Everything upstream supports still works — see
 The fork is not published to npm, so install it from this repository:
 
 ```bash
-git clone https://github.com/jtippett/not-codex-security.git
-cd not-codex-security/sdk/typescript
+git clone https://github.com/jtippett/open-security.git
+cd open-security/sdk/typescript
 pnpm install
 pnpm run build
 npm install -g .
@@ -36,11 +36,11 @@ npm install -g .
 Verify the CLI is on your PATH:
 
 ```bash
-codex-security --version
+open-security --version
 ```
 
 (To skip the global install, run the same commands through
-`node sdk/typescript/bin/codex-security.mjs` instead of `codex-security`.)
+`node sdk/typescript/bin/open-security.mjs` instead of `open-security`.)
 
 ### 3. Set your OpenRouter API key
 
@@ -56,7 +56,7 @@ CLI reads the environment variable only and never stores the key.
 From the repository you want to scan:
 
 ```bash
-codex-security scan .
+open-security scan .
 ```
 
 That runs a standard scan with `z-ai/glm-5.2` at the default reasoning effort
@@ -65,9 +65,9 @@ depending on repository size and model speed — open models are slower than
 the upstream OpenAI path, so let it run. Useful variations:
 
 ```bash
-codex-security scan . --model deepseek/deepseek-v4-pro --effort high
-codex-security scan . --max-cost 2.50        # stop if estimated cost exceeds $2.50
-codex-security scan . --verbose              # progress diagnostics on stderr
+open-security scan . --model deepseek/deepseek-v4-pro --effort high
+open-security scan . --max-cost 2.50        # stop if estimated cost exceeds $2.50
+open-security scan . --verbose              # progress diagnostics on stderr
 ```
 
 ## Choosing a model
@@ -75,13 +75,13 @@ codex-security scan . --verbose              # progress diagnostics on stderr
 Any OpenRouter model id works with `--model`. Models that have done well in
 our testing:
 
-| Model | `--model` id | Notes |
-| --- | --- | --- |
-| GLM 5.2 (default) | `z-ai/glm-5.2` | Good quality for the price; will move to GLM 5.3 when it lands on OpenRouter. |
-| DeepSeek V4 Pro | `deepseek/deepseek-v4-pro` | Followed the scan contract unaided in testing; slower. |
-| Kimi K3 | `moonshotai/kimi-k3` | |
-| MiniMax M3 | `minimax/minimax-m3` | |
-| Qwen 3.8 Max | `qwen/qwen3.8-max` | |
+| Model             | `--model` id               | Notes                                                                         |
+| ----------------- | -------------------------- | ----------------------------------------------------------------------------- |
+| GLM 5.2 (default) | `z-ai/glm-5.2`             | Good quality for the price; will move to GLM 5.3 when it lands on OpenRouter. |
+| DeepSeek V4 Pro   | `deepseek/deepseek-v4-pro` | Followed the scan contract unaided in testing; slower.                        |
+| Kimi K3           | `moonshotai/kimi-k3`       |                                                                               |
+| MiniMax M3        | `minimax/minimax-m3`       |                                                                               |
+| Qwen 3.8 Max      | `qwen/qwen3.8-max`         |                                                                               |
 
 `--effort` accepts `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`;
 OpenRouter maps it to each model's reasoning controls. Cost tracking and
@@ -91,21 +91,21 @@ OpenRouter maps it to each model's reasoning controls. Cost tracking and
 ## Using OpenAI and other providers
 
 `--provider openai` restores upstream behaviour, including its default model
-`gpt-5.6-sol`, ChatGPT sign-in (`codex-security login`), and Trusted Access
+`gpt-5.6-sol`, ChatGPT sign-in (`open-security login`), and Trusted Access
 for Cyber (some cybersecurity requests and protected findings require approval
 via [chatgpt.com/cyber](https://chatgpt.com/cyber)). For CI, set
 `OPENAI_API_KEY` or `CODEX_API_KEY` instead of signing in.
 
 ```bash
-codex-security login   # only for --provider openai
-codex-security scan . --provider openai --model gpt-5.6-terra --effort high
+open-security login   # only for --provider openai
+open-security scan . --provider openai --model gpt-5.6-terra --effort high
 
 export FIREWORKS_API_KEY="<your-fireworks-api-key>"
-codex-security scan . --provider fireworks --model accounts/fireworks/models/qwen3-235b-a22b
+open-security scan . --provider fireworks --model accounts/fireworks/models/qwen3-235b-a22b
 
 export AWS_BEARER_TOKEN_BEDROCK="<your-bedrock-api-key>"
 export AWS_REGION="us-east-2"
-codex-security scan . --provider amazon-bedrock --model openai.gpt-5.6-luna
+open-security scan . --provider amazon-bedrock --model openai.gpt-5.6-luna
 ```
 
 Amazon Bedrock also supports standard AWS access keys, profiles, web identity,
@@ -124,8 +124,7 @@ use; select one explicitly with `--auth chatgpt` or `--auth api-key`.
 - Direct vendor endpoints are not supported: the Codex runtime only speaks the
   OpenAI Responses API (`wire_api = "chat"` was removed in Codex 0.148), and
   OpenRouter normalizes that for every model.
-- The package is renamed `not-codex-security`; the installed command is still
-  `codex-security`.
+- The package and its installed command are both named `open-security`.
 - The fork tracks upstream; see [`docs/UPSTREAM.md`](docs/UPSTREAM.md) for the
   update procedure and the list of fork-owned files.
 
@@ -137,7 +136,7 @@ use; select one explicitly with `--auth chatgpt` or `--auth api-key`.
 - **Scan seems stuck** — add `--verbose` (or set
   `CODEX_SECURITY_LOG_LEVEL=debug`) for progress on stderr; open models can
   legitimately take 30+ minutes on larger repositories. JSON results stay on
-  stdout. Use `codex-security scans logs SCAN_ID` to inspect saved session
+  stdout. Use `open-security scans logs SCAN_ID` to inspect saved session
   events afterwards.
 - **Costs higher than expected** — pass `--max-cost <usd>`; the scan stops
   cleanly and keeps completed findings once the estimate exceeds the limit.
@@ -154,8 +153,8 @@ dashboard omit messages that contain recognizable credentials.
 Everything below is inherited from upstream and works with any provider.
 
 ```bash
-codex-security scan . --scan-prompt-file scan.md --post-scan-prompt-file follow-up.md
-codex-security scan . --mode deep --workers 2 --subagents 0 --stop-after-no-new 3 --max-discovery-runs 10 --max-time-hours 1.5
+open-security scan . --scan-prompt-file scan.md --post-scan-prompt-file follow-up.md
+open-security scan . --mode deep --workers 2 --subagents 0 --stop-after-no-new 3 --max-discovery-runs 10 --max-time-hours 1.5
 ```
 
 Deep-scan discovery stops after 96 hours by default; `--max-time-hours`
@@ -179,7 +178,7 @@ The SDK constructor does not apply the fork's CLI default, so opt in to
 OpenRouter explicitly:
 
 ```ts
-import { CodexSecurity, applyDefaultModelProvider } from "not-codex-security";
+import { CodexSecurity, applyDefaultModelProvider } from "open-security";
 
 const codexOverrides = {};
 applyDefaultModelProvider(codexOverrides, undefined); // selects OpenRouter + the default model

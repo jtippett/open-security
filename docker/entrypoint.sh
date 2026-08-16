@@ -139,4 +139,4 @@ if [ -n "${GH_TOKEN:-${GITHUB_TOKEN:-}}" ]; then
     export GIT_CONFIG_COUNT=$((git_config_count + 1))
 fi
 
-exec codex-security "$@"
+exec open-security "$@"
