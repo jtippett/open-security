@@ -8,6 +8,8 @@ import {
   scanProgressUpdatesFromEvent,
   type ScanProgress,
 } from "./worker-progress.js";
+// open-models fork: generated OpenRouter catalog prices (pnpm generate:pricing).
+import { OPENROUTER_MODEL_PRICING_NANODOLLARS } from "./openrouter-pricing.js";
 
 export interface ScanCost {
   model: string;
@@ -839,7 +841,9 @@ export function estimateScanCost(
   const pricingModel = model.startsWith("openai.")
     ? model.slice("openai.".length)
     : model;
-  const pricing = MODEL_PRICING_NANODOLLARS[pricingModel];
+  const pricing =
+    MODEL_PRICING_NANODOLLARS[pricingModel] ??
+    OPENROUTER_MODEL_PRICING_NANODOLLARS[pricingModel];
   const normalized = tokenUsage(usage);
   if (pricing === undefined || normalized === null) return null;
   const [inputRate, cachedInputRate, cacheWriteInputRate, outputRate] = pricing;

@@ -30,6 +30,8 @@ describe("CLI skill commands", () => {
           await main(
             [
               command,
+              "--provider",
+              "openai",
               `${command}.txt`,
               `${command} literal`,
               "C:\\tmp\\finding one.txt",
@@ -101,7 +103,10 @@ describe("CLI skill commands", () => {
         expect(help.text()).toContain("--codex <array>");
         expect(help.text()).toContain('model="gpt-5.6-terra"');
         expect(help.text()).toContain('model_reasoning_effort="high"');
-        expect(help.text()).not.toContain("--provider");
+        // open-models fork: validate and patch accept --provider.
+        expect(help.text()).toContain(
+          "--provider <openai|openrouter|fireworks>",
+        );
       }
     } finally {
       await rm(directory, { recursive: true, force: true });

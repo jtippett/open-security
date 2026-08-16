@@ -51,6 +51,70 @@ export function isExternalModelProvider(
   );
 }
 
+// --- open-models fork: default provider and models -------------------------
+// Upstream defaults to OpenAI (`gpt-5.6-sol`, no `model_provider`) and
+// DEFAULT_CODEX_CONFIG below is kept identical to upstream so the SDK and its
+// tests do not diverge. The CLI applies DEFAULT_MODEL_PROVIDER when --provider
+// is omitted and DEFAULT_MODEL_BY_PROVIDER when --model is omitted.
+// Keep this block self-contained for rebasing.
+export type ScanModelProviderName =
+  | "openai"
+  | "amazon-bedrock"
+  | ExternalModelProvider;
+
+export const DEFAULT_MODEL_PROVIDER: ScanModelProviderName = "openrouter";
+
+export const DEFAULT_MODEL_BY_PROVIDER: Readonly<
+  Partial<Record<ScanModelProviderName, string>>
+> = {
+  openai: "gpt-5.6-sol",
+  openrouter: "z-ai/glm-5.2",
+};
+
+export function defaultModelForProvider(
+  provider: ScanModelProviderName,
+): string | undefined {
+  return DEFAULT_MODEL_BY_PROVIDER[provider];
+}
+
+/**
+ * When no provider was requested explicitly (`--provider`) and the overrides
+ * do not select one themselves (`model_provider` at the root or in the
+ * selected profile), select DEFAULT_MODEL_PROVIDER and, when no model is
+ * configured either, its default model. Explicit selections are untouched.
+ */
+export function applyDefaultModelProvider(
+  overrides: JsonObject,
+  requestedProvider: ScanModelProviderName | undefined,
+): void {
+  if (requestedProvider !== undefined) return;
+  if (scanModelProvider(overrides) !== undefined) return;
+  if (!isExternalModelProvider(DEFAULT_MODEL_PROVIDER)) return;
+  const providers = overrides["model_providers"];
+  overrides["model_provider"] = DEFAULT_MODEL_PROVIDER;
+  overrides["model_providers"] = {
+    ...(isObject(providers) ? providers : {}),
+    [DEFAULT_MODEL_PROVIDER]: {
+      ...EXTERNAL_CODEX_PROVIDERS[DEFAULT_MODEL_PROVIDER],
+    },
+  };
+  const fallback = defaultModelForProvider(DEFAULT_MODEL_PROVIDER);
+  if (fallback !== undefined && !hasScanModelKey(overrides)) {
+    overrides["model"] = fallback;
+  }
+}
+
+// A present but invalid model is left alone so validation reports it.
+function hasScanModelKey(config: Readonly<JsonObject>): boolean {
+  const selectedProfile = selectedScanProfile(config);
+  return (
+    (selectedProfile !== undefined &&
+      Object.hasOwn(selectedProfile, "model")) ||
+    Object.hasOwn(config, "model")
+  );
+}
+// ---------------------------------------------------------------------------
+
 export const DEFAULT_CODEX_CONFIG: Readonly<JsonObject> = {
   approval_policy: "never",
   cli_auth_credentials_store: "auto",

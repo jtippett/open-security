@@ -77,6 +77,8 @@ import {
   type ScanWorkerStatus,
 } from "./worker-progress.js";
 import { CODEX_EXECUTABLE_VERSION, CODEX_SDK_VERSION } from "./version.js";
+// open-models fork
+import { repairDraftContract, withOpenModelsGuidance } from "./open-models.js";
 import {
   acquireCodexSecurityCredentialHomeLock,
   bootstrapPlugin,
@@ -913,7 +915,10 @@ export class CodexSecurity {
         scanId,
         runtime.configPath !== undefined,
         knowledgeBase !== null,
-        options.scanPrompt,
+        // open-models fork: contract guidance for external-provider models.
+        externalProvider === null
+          ? options.scanPrompt
+          : withOpenModelsGuidance(options.scanPrompt),
       );
       checkOpen();
       const feedback = await workbench(
@@ -1161,6 +1166,36 @@ export class CodexSecurity {
         onObserverError: options.onObserverError,
       });
       checkOpen();
+      // open-models fork: open models do not always meet the scan contract on
+      // the first pass; validate the draft and let the same thread repair it.
+      if (externalProvider !== null) {
+        await repairDraftContract({
+          scanDir,
+          sourceRoot: repo,
+          python,
+          pluginRoot: runtime.plugin.pluginRoot,
+          environment: workbenchOptions.environment,
+          signal,
+          runTurn: async (repairPrompt) => {
+            for await (const event of (
+              await thread.runStreamed(repairPrompt, { signal })
+            ).events) {
+              if (event.type === "turn.failed") {
+                throw new CodexSecurityError(
+                  turnFailureMessage(event["error"]),
+                );
+              }
+            }
+          },
+          warn: (message) =>
+            notifyObserver(
+              "onWarning",
+              options.onWarning,
+              options.onObserverError,
+              message,
+            ),
+        });
+      }
       const completion = await workbench(workbenchOptions, [
         "complete-scan",
         "--scan-id",

@@ -1,5 +1,5 @@
 {
-  "name": "@openai/codex-security",
+  "name": "not-codex-security",
   "version": "0.1.12",
   "description": "TypeScript SDK and CLI for Codex Security",
   "license": "Apache-2.0",
@@ -46,6 +46,7 @@
     "format": "prettier --check --ignore-path .gitignore --ignore-path .prettierignore \"**/*.{cjs,mjs,js,ts,json,md}\"",
     "generate:models": "node scripts/generate-models.cjs",
     "generate:models:check": "node scripts/generate-models.cjs --check",
+    "generate:pricing": "node scripts/generate-openrouter-pricing.mjs",
     "lint": "tsc --noEmit",
     "prepack": "node --run build",
     "test": "bun test --timeout 30000 ./tests-ts",

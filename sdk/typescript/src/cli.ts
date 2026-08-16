@@ -57,13 +57,17 @@ import {
 } from "./bulk-scan-discovery.js";
 import {
   DEFAULT_CODEX_CONFIG,
+  DEFAULT_MODEL_PROVIDER,
   EXTERNAL_CODEX_PROVIDERS,
+  applyDefaultModelProvider,
+  defaultModelForProvider,
   isExternalModelProvider,
   mergedCodexConfig,
   scanModelConfiguration,
   scanModelProvider,
   type CodexSecurityConfig,
   type ExternalModelProvider,
+  type ScanModelProviderName,
   type JsonObject,
   type JsonValue,
 } from "./config.js";
@@ -165,6 +169,10 @@ const MODEL_REASONING_EFFORTS = [
 type ScanReasoningEffort = (typeof MODEL_REASONING_EFFORTS)[number];
 const DEFAULT_SCAN_MODEL_CONFIGURATION =
   scanModelConfiguration(DEFAULT_CODEX_CONFIG);
+// open-models fork: the CLI's default model follows the default provider.
+const DEFAULT_SCAN_MODEL =
+  defaultModelForProvider(DEFAULT_MODEL_PROVIDER) ??
+  DEFAULT_SCAN_MODEL_CONFIGURATION.model;
 const CODEX_OVERRIDE_DESCRIPTION =
   'Repeat TOML KEY=VALUE; e.g. model_reasoning_effort="high" or features.multi_agent_v2.max_concurrent_threads_per_session=4.';
 const PLUGIN_PATH_DESCRIPTION =
@@ -211,10 +219,23 @@ const VALUE_OPTIONS = new Set([
   "--scan-root",
   "--reason",
 ]);
+// open-models fork: the provider default is resolved in parseCodexOverrides so
+// an explicit --codex model_provider or profile still wins when --provider is
+// omitted, exactly as upstream.
 const PROVIDER_OPTION = z
   .enum(["openai", "openrouter", "fireworks", "amazon-bedrock"])
-  .default("openai")
-  .describe("Inference provider for scans.");
+  .optional()
+  .describe(
+    `Inference provider for scans (default: ${DEFAULT_MODEL_PROVIDER}).`,
+  );
+// open-models fork: validate and patch run `codex exec` directly and support the
+// OpenAI default plus the registry's external providers.
+const SKILL_PROVIDER_OPTION = z
+  .enum(["openai", "openrouter", "fireworks"])
+  .optional()
+  .describe(
+    `Inference provider for validation and patching (default: ${DEFAULT_MODEL_PROVIDER}).`,
+  );
 
 function optionValue(flag: string) {
   return z.string().min(1, `${flag} must not be empty.`);
@@ -348,7 +369,7 @@ interface ScanArguments extends DeepScanOptions {
   mode: ScanMode;
   model?: string;
   effort?: ScanReasoningEffort;
-  provider?: "openai" | "amazon-bedrock" | ExternalModelProvider;
+  provider?: ScanModelProviderName;
   outputDir?: string;
   archiveExisting: boolean;
   pluginPath?: string;
@@ -1178,7 +1199,7 @@ export async function main(
     description: "Run, validate, patch, and export Codex Security findings.",
     version: VERSION,
     mcp: {
-      command: "npx --yes @openai/codex-security --mcp",
+      command: "npx --yes not-codex-security --mcp",
       instructions:
         "Use info for read-only SDK metadata. Scans and other state-changing commands are CLI-only because the MCP transport cannot cancel active commands.",
     },
@@ -1243,9 +1264,7 @@ export async function main(
           ...DEEP_SCAN_OPTION_SCHEMAS,
           model: optionValue("--model")
             .optional()
-            .describe(
-              `OpenAI model to use (default: ${DEFAULT_SCAN_MODEL_CONFIGURATION.model}).`,
-            ),
+            .describe(`Model to use (default: ${DEFAULT_SCAN_MODEL}).`),
           effort: effortOption(),
           provider: PROVIDER_OPTION,
           outputDir: optionValue("--output-dir")
@@ -1522,7 +1541,7 @@ export async function main(
         model: optionValue("--model")
           .optional()
           .describe(
-            `OpenAI model for each repository (default: ${DEFAULT_SCAN_MODEL_CONFIGURATION.model}).`,
+            `Model for each repository (default: ${DEFAULT_SCAN_MODEL}).`,
           ),
         effort: effortOption(),
         provider: PROVIDER_OPTION,
@@ -1737,6 +1756,7 @@ export async function main(
       }),
       options: z.object({
         effort: effortOption(),
+        provider: SKILL_PROVIDER_OPTION,
         codex: z
           .array(optionValue("--codex"))
           .default([])
@@ -1754,6 +1774,7 @@ export async function main(
             output,
             errorOutput,
             dependencies,
+            options.provider,
           );
         } catch (error) {
           exitCode = 2;
@@ -1773,6 +1794,7 @@ export async function main(
       }),
       options: z.object({
         effort: effortOption(),
+        provider: SKILL_PROVIDER_OPTION,
         codex: z
           .array(optionValue("--codex"))
           .default([])
@@ -1790,6 +1812,7 @@ export async function main(
             output,
             errorOutput,
             dependencies,
+            options.provider,
           );
         } catch (error) {
           exitCode = 2;
@@ -2421,11 +2444,26 @@ async function runSkill(
   stdout: Writable,
   stderr: Writable,
   dependencies: CliDependencies,
+  provider?: "openai" | ExternalModelProvider,
 ): Promise<number> {
-  const overrides = parseCodexOverrides(codexOverrides, undefined, effort);
+  const overrides = parseCodexOverrides(
+    codexOverrides,
+    undefined,
+    effort,
+    provider,
+  );
+  // open-models fork: an external provider from the registry travels with the
+  // model and effort; anything else stays restricted as upstream.
+  const skillProvider = overrides["model_provider"];
+  const providerKeys = isExternalModelProvider(skillProvider)
+    ? ["model_provider", "model_providers"]
+    : [];
   if (
     Object.keys(overrides).some(
-      (key) => key !== "model" && key !== "model_reasoning_effort",
+      (key) =>
+        key !== "model" &&
+        key !== "model_reasoning_effort" &&
+        !providerKeys.includes(key),
     )
   ) {
     throw new CodexSecurityError(
@@ -2520,6 +2558,17 @@ async function runSkill(
       `model=${JSON.stringify(model)}`,
       "--config",
       `model_reasoning_effort=${JSON.stringify(reasoningEffort)}`,
+      // open-models fork
+      ...(isExternalModelProvider(skillProvider)
+        ? [
+            "--config",
+            `model_provider=${JSON.stringify(skillProvider)}`,
+            "--config",
+            `model_providers.${skillProvider}=${tomlInlineTable(
+              EXTERNAL_CODEX_PROVIDERS[skillProvider],
+            )}`,
+          ]
+        : []),
       "--config",
       'approval_policy="never"',
       "--config",
@@ -2541,6 +2590,13 @@ async function runSkill(
       stderr,
     },
   );
+}
+
+// open-models fork: TOML inline table for a registry provider entry.
+function tomlInlineTable(entry: Readonly<Record<string, string>>): string {
+  return `{ ${Object.entries(entry)
+    .map(([key, value]) => `${key} = ${JSON.stringify(value)}`)
+    .join(", ")} }`;
 }
 
 export async function readSkillCommandOutput(
@@ -3737,7 +3793,7 @@ export function parseCodexOverrides(
   values: readonly string[],
   model?: string,
   effort?: ScanReasoningEffort,
-  provider?: "openai" | "amazon-bedrock" | ExternalModelProvider,
+  provider?: ScanModelProviderName,
 ): JsonObject {
   const result = Object.create(null) as JsonObject;
   if (model !== undefined) result["model"] = model;
@@ -3814,10 +3870,18 @@ export function parseCodexOverrides(
     (isExternalModelProvider(provider) || provider === "amazon-bedrock") &&
     !("model" in result)
   ) {
-    throw new CodexSecurityError(
-      `--model is required when using --provider ${provider}`,
-    );
+    // open-models fork: providers with a known default model use it when
+    // --model is omitted; otherwise --model is required as upstream.
+    const fallback = defaultModelForProvider(provider);
+    if (fallback === undefined) {
+      throw new CodexSecurityError(
+        `--model is required when using --provider ${provider}`,
+      );
+    }
+    result["model"] = fallback;
   }
+  // open-models fork: select the default provider when nothing chose one.
+  applyDefaultModelProvider(result, provider);
   return result;
 }
 

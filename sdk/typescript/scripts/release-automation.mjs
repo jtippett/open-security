@@ -5,6 +5,8 @@ import { pathToFileURL } from "node:url";
 import { assertExpectedGitHead } from "./package-provenance.mjs";
 
 const packageName = "@openai/codex-security";
+// open-models fork: releases of the renamed package are accepted too.
+const forkPackageName = "not-codex-security";
 const stableVersion = /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/u;
 const provenancePredicate = "https://slsa.dev/provenance/v1";
 const publicNpmRegistry = "https://registry.npmjs.org/";
@@ -24,7 +26,10 @@ function stableReleaseTagVersion(tag) {
 }
 
 export function releaseVersion(packageJson) {
-  if (packageJson?.name !== packageName) {
+  if (
+    packageJson?.name !== packageName &&
+    packageJson?.name !== forkPackageName
+  ) {
     throw new Error("Release package must be @openai/codex-security.");
   }
   if (

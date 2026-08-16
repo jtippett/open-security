@@ -453,8 +453,8 @@ describe("CLI authentication", () => {
 
   test("offers the existing interactive prompt when both sign-ins are available", async () => {
     for (const [argv, selection] of [
-      [["scan"], "chatgpt"],
-      [["scan"], "api-key"],
+      [["scan", "--provider", "openai"], "chatgpt"],
+      [["scan", "--provider", "openai"], "api-key"],
       [["scans", "rerun", "scan-original", "--verbose", "--json"], "chatgpt"],
       [
         ["scans", "rerun", "scan-original", "--verbose", "--format", "jsonl"],
@@ -612,7 +612,7 @@ describe("CLI authentication", () => {
 
     expect(
       await main(
-        ["scan", "--auth", "api-key"],
+        ["scan", "--auth", "api-key", "--provider", "openai"],
         capture().stream,
         stderr.stream,
         deps,
@@ -890,9 +890,14 @@ describe("CLI authentication", () => {
         close: async () => {},
       });
 
-      expect(await main(["scan"], capture().stream, stderr.stream, deps)).toBe(
-        2,
-      );
+      expect(
+        await main(
+          ["scan", "--provider", "openai"],
+          capture().stream,
+          stderr.stream,
+          deps,
+        ),
+      ).toBe(2);
       expect(stderr.text()).toContain(source);
       expect(stderr.text()).toContain("--auth chatgpt");
       expect(stderr.text()).not.toContain("SYNTHETIC_SECRET");

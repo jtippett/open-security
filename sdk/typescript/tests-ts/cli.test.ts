@@ -801,29 +801,55 @@ describe("CLI", () => {
       try {
         await multiscanInventory(root);
         let config: CodexSecurityConfig | undefined;
-        const missingModelError = capture();
-        expect(
-          await main(
-            [
-              "bulk-scan",
-              "repositories.csv",
-              "--output-dir",
-              "results",
-              "--provider",
-              provider,
-            ],
-            capture().stream,
-            missingModelError.stream,
-            dependencies({
-              currentDirectory: root,
-              onConfig: (value) => (config = value),
-            }),
-          ),
-        ).toBe(2);
-        expect(missingModelError.text()).toContain(
-          `--model is required when using --provider ${provider}`,
-        );
-        expect(config).toBeUndefined();
+        if (provider === "openrouter") {
+          expect(
+            await main(
+              [
+                "bulk-scan",
+                "repositories.csv",
+                "--output-dir",
+                "default-results",
+                "--provider",
+                provider,
+              ],
+              capture().stream,
+              capture().stream,
+              dependencies({
+                currentDirectory: root,
+                onConfig: (value) => (config = value),
+              }),
+            ),
+          ).toBe(0);
+          expect(config?.codexOverrides).toMatchObject({
+            model: "z-ai/glm-5.2",
+            model_provider: provider,
+            model_providers: { [provider]: providerConfig },
+          });
+        } else {
+          const missingModelError = capture();
+          expect(
+            await main(
+              [
+                "bulk-scan",
+                "repositories.csv",
+                "--output-dir",
+                "results",
+                "--provider",
+                provider,
+              ],
+              capture().stream,
+              missingModelError.stream,
+              dependencies({
+                currentDirectory: root,
+                onConfig: (value) => (config = value),
+              }),
+            ),
+          ).toBe(2);
+          expect(missingModelError.text()).toContain(
+            `--model is required when using --provider ${provider}`,
+          );
+          expect(config).toBeUndefined();
+        }
         expect(
           await main(
             [
@@ -1393,14 +1419,14 @@ describe("CLI", () => {
       );
       expect(child.status).toBe(0);
       expect(child.stdout).toContain(
-        "command: npx --yes @openai/codex-security --mcp",
+        "command: npx --yes not-codex-security --mcp",
       );
       const config = JSON.parse(
         await readFile(join(home, ".config", "amp", "settings.json"), "utf8"),
       );
       expect(config["amp.mcpServers"]["codex-security"]).toEqual({
         command: "npx",
-        args: ["--yes", "@openai/codex-security", "--mcp"],
+        args: ["--yes", "not-codex-security", "--mcp"],
       });
     } finally {
       await rm(home, { recursive: true, force: true });
@@ -2139,8 +2165,9 @@ describe("CLI", () => {
     expect(help.text()).toContain(
       "--provider <openai|openrouter|fireworks|amazon-bedrock>",
     );
+    expect(help.text()).toContain("Model to use (default: z-ai/glm-5.2).");
     expect(help.text()).toContain(
-      `OpenAI model to use (default: ${DEFAULT_SCAN_MODEL_CONFIGURATION.model}).`,
+      "Inference provider for scans (default: openrouter).",
     );
     expect(help.text()).toContain(
       "--effort <minimal|low|medium|high|xhigh|max>",
@@ -2178,7 +2205,10 @@ describe("CLI", () => {
     ).toBe(0);
     expect(help.text()).toContain("--model <string>");
     expect(help.text()).toContain(
-      `OpenAI model for each repository (default: ${DEFAULT_SCAN_MODEL_CONFIGURATION.model}).`,
+      "Model for each repository (default: z-ai/glm-5.2).",
+    );
+    expect(help.text()).toContain(
+      "Inference provider for scans (default: openrouter).",
     );
     expect(help.text()).toContain(
       "--effort <minimal|low|medium|high|xhigh|max>",
@@ -2247,7 +2277,7 @@ describe("CLI", () => {
       let config: CodexSecurityConfig | undefined;
       expect(
         await main(
-          ["scan", ".", ...options],
+          ["scan", ".", "--provider", "openai", ...options],
           capture().stream,
           capture().stream,
           dependencies({ onConfig: (value) => (config = value) }),
@@ -2413,11 +2443,16 @@ describe("CLI", () => {
 
   test("parses TOML override literals and rejects conflicts", () => {
     expect(
-      parseCodexOverrides([
-        "agents.max_threads=4",
-        'model_reasoning_effort="high"',
-        "features.goals=true",
-      ]),
+      parseCodexOverrides(
+        [
+          "agents.max_threads=4",
+          'model_reasoning_effort="high"',
+          "features.goals=true",
+        ],
+        undefined,
+        undefined,
+        "openai",
+      ),
     ).toEqual({
       agents: { max_threads: 4 },
       model_reasoning_effort: "high",
@@ -2432,7 +2467,7 @@ describe("CLI", () => {
     expect(() =>
       parseCodexOverrides(['model="gpt-5.6-sol"'], "gpt-5.6-terra"),
     ).toThrow("--model conflicts with --codex model");
-    expect(parseCodexOverrides([], "gpt-5.6-terra", "high")).toEqual({
+    expect(parseCodexOverrides([], "gpt-5.6-terra", "high", "openai")).toEqual({
       model: "gpt-5.6-terra",
       model_reasoning_effort: "high",
     });
@@ -2443,14 +2478,23 @@ describe("CLI", () => {
         "high",
       ),
     ).toThrow("--effort conflicts with --codex model_reasoning_effort");
+    expect(parseCodexOverrides([], undefined, undefined, "openrouter")).toEqual(
+      {
+        model: "z-ai/glm-5.2",
+        model_provider: "openrouter",
+        model_providers: { openrouter: OPENROUTER_CODEX_PROVIDER },
+      },
+    );
+    for (const provider of ["fireworks", "amazon-bedrock"] as const) {
+      expect(() =>
+        parseCodexOverrides([], undefined, undefined, provider),
+      ).toThrow(`--model is required when using --provider ${provider}`);
+    }
     for (const provider of [
       "openrouter",
       "fireworks",
       "amazon-bedrock",
     ] as const) {
-      expect(() =>
-        parseCodexOverrides([], undefined, undefined, provider),
-      ).toThrow(`--model is required when using --provider ${provider}`);
       expect(() =>
         parseCodexOverrides(
           ['model_provider="other"'],
@@ -2549,8 +2593,8 @@ describe("CLI", () => {
       ],
       [["scan", ".", "--model="], "--model must not be empty"],
       [
-        ["scan", ".", "--provider", "openrouter"],
-        "--model is required when using --provider openrouter",
+        ["scan", ".", "--provider", "amazon-bedrock"],
+        "--model is required when using --provider amazon-bedrock",
       ],
       [
         ["scan", ".", "--provider", "fireworks"],
@@ -2715,6 +2759,8 @@ describe("CLI", () => {
         "/managed/python",
         "--codex",
         "features.goals=true",
+        "--provider",
+        "openai",
         "--json",
       ],
       stdout.stream,
@@ -2785,7 +2831,7 @@ describe("CLI", () => {
 
     expect(
       await main(
-        ["scan", ".", "--verbose", "--json"],
+        ["scan", ".", "--provider", "openai", "--verbose", "--json"],
         stdout.stream,
         stderr.stream,
         deps,
@@ -2835,7 +2881,7 @@ describe("CLI", () => {
 
     expect(
       await main(
-        ["scan", ".", "--verbose", "--json"],
+        ["scan", ".", "--provider", "openai", "--verbose", "--json"],
         stdout.stream,
         stderr.stream,
         dependencies(),
@@ -3229,7 +3275,15 @@ describe("CLI", () => {
 
     expect(
       await main(
-        ["scan", ".", "--dry-run", "--verbose", "--json"],
+        [
+          "scan",
+          ".",
+          "--provider",
+          "openai",
+          "--dry-run",
+          "--verbose",
+          "--json",
+        ],
         stdout.stream,
         stderr.stream,
         dependencies({
@@ -3344,7 +3398,7 @@ describe("CLI", () => {
 
     expect(
       await main(
-        ["scan", ".", "--verbose", "--json"],
+        ["scan", ".", "--provider", "openai", "--verbose", "--json"],
         stdout.stream,
         stderr.stream,
         deps,
@@ -4731,7 +4785,7 @@ describe("CLI", () => {
     const stderr = capture();
     expect(
       await main(
-        ["scan", "repo", "--dry-run", "--json"],
+        ["scan", "repo", "--provider", "openai", "--dry-run", "--json"],
         stdout.stream,
         stderr.stream,
         dependencies(),

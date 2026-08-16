@@ -13,3 +13,6 @@ dist/
 
 # Never publish internal-only plugin data.
 .internal/
+
+# Fork-local agent journal.
+.private-journal/

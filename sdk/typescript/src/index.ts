@@ -42,6 +42,14 @@ export {
   mergedCodexConfig,
   writeCodexConfig,
 } from "./config.js";
+// open-models fork: helpers for selecting the OpenRouter default from the SDK.
+export {
+  DEFAULT_MODEL_PROVIDER,
+  EXTERNAL_CODEX_PROVIDERS,
+  applyDefaultModelProvider,
+  defaultModelForProvider,
+} from "./config.js";
+export type { ScanModelProviderName } from "./config.js";
 export type { CodexSecurityConfig, JsonObject, JsonValue } from "./config.js";
 export { loadContract, requireScanFile } from "./contract.js";
 export type { LoadedContract, ScanExpectation } from "./contract.js";
