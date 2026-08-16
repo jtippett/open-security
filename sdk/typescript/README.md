@@ -762,7 +762,7 @@ the security policy for the full threat model and private reporting process.
 
 - [CLI quickstart](https://developers.openai.com/codex/security/cli)
 - [TypeScript SDK guide](https://developers.openai.com/codex/security/sdk)
-- [GitHub issues](https://github.com/openai/codex-security/issues) for bugs and
+- [GitHub issues](https://github.com/jtippett/not-codex-security/issues) for bugs and
   feature requests
 - [Security policy](https://github.com/openai/codex-security/blob/main/SECURITY.md)
   for private vulnerability reporting and safe operation

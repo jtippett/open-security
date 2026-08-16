@@ -7,10 +7,10 @@
   "homepage": "https://developers.openai.com/codex/security",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openai/codex-security.git",
+    "url": "https://github.com/jtippett/not-codex-security.git",
     "directory": "sdk/typescript"
   },
-  "bugs": "https://github.com/openai/codex-security/issues",
+  "bugs": "https://github.com/jtippett/not-codex-security/issues",
   "type": "module",
   "engines": {
     "node": "^22.13.0 || ^24.0.0 || ^26.0.0"

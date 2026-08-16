@@ -26,7 +26,7 @@ sign-in. Everything upstream supports still works — see
 The fork is not published to npm, so install it from this repository:
 
 ```bash
-git clone <this-repository> not-codex-security
+git clone https://github.com/jtippett/not-codex-security.git
 cd not-codex-security/sdk/typescript
 pnpm install
 pnpm run build

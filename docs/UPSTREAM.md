@@ -112,8 +112,9 @@ Upstream publishes `@openai/codex-security`; this fork's package is named
 fork is not published to npm — the READMEs document a from-source install. The
 `.github/workflows` release pipeline still targets the upstream name and repo
 (`github.repository == 'openai/codex-security'` guards make it a no-op on the
-fork); `repository`/`bugs` URLs in `sdk/typescript/package.json` still point
-at upstream. If the fork is ever published, update those URLs and revisit
+fork); `repository`/`bugs` URLs in `sdk/typescript/package.json` point at
+[jtippett/not-codex-security](https://github.com/jtippett/not-codex-security).
+If the fork is ever published to npm, revisit
 `scripts/release-automation.mjs`, which currently accepts both package names.
 
 ## Still pending
