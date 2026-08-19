@@ -80,14 +80,14 @@ open-security scan . --verbose              # progress diagnostics on stderr
 Any OpenRouter model id works with `--model`. Models that have done well in
 our testing:
 
-| Model             | `--model` id               | Notes                                                                         |
-| ----------------- | -------------------------- | ----------------------------------------------------------------------------- |
-| GLM 5.3 (default) | `z-ai/glm-5.3`             | Best quality in the GLM line.                                                 |
-| GLM 5.2           | `z-ai/glm-5.2`             | Good quality, slightly cheaper.                                               |
-| DeepSeek V4 Pro   | `deepseek/deepseek-v4-pro` | Followed the scan contract unaided in testing; slower.                        |
-| Kimi K3           | `moonshotai/kimi-k3`       |                                                                               |
-| MiniMax M3        | `minimax/minimax-m3`       |                                                                               |
-| Qwen 3.8 Max      | `qwen/qwen3.8-max`         |                                                                               |
+| Model             | `--model` id               | Notes                                                  |
+| ----------------- | -------------------------- | ------------------------------------------------------ |
+| GLM 5.3 (default) | `z-ai/glm-5.3`             | Best quality in the GLM line.                          |
+| GLM 5.2           | `z-ai/glm-5.2`             | Good quality, slightly cheaper.                        |
+| DeepSeek V4 Pro   | `deepseek/deepseek-v4-pro` | Followed the scan contract unaided in testing; slower. |
+| Kimi K3           | `moonshotai/kimi-k3`       |                                                        |
+| MiniMax M3        | `minimax/minimax-m3`       |                                                        |
+| Qwen 3.8 Max      | `qwen/qwen3.8-max`         |                                                        |
 
 `--effort` accepts `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`;
 OpenRouter maps it to each model's reasoning controls. Cost tracking and
@@ -174,9 +174,84 @@ directory outside the repository.
 `findings list [repository]` shows open findings across a repository's scans
 and identifies findings not confirmed in its latest scan.
 
+Use `patch OCCURRENCE_ID` to fix one saved finding, or
+`patch --scan SCAN_ID --severity high` to fix selected findings from a saved
+scan. Add `--json` for structured results or `--create-pr` to open a GitHub pull
+request after verification. If publication fails, use the printed
+`patch --resume-pr BRANCH` command to retry without running Codex again.
+
+Use `patch --linear-issue SEC-123` to import and fix a Linear issue, or
+`patch --linear-project "Security backlog" --linear-filter '{"labels":{"name":{"eq":"security"}}}'`
+to fix matching open issues from a project. Set
+`CODEX_SECURITY_LINEAR_API_KEY` to authorize read-only Linear access.
+
 `scans compare BEFORE_SCAN_ID AFTER_SCAN_ID` automatically matches findings by
 root cause, reuses saved matches, and identifies new, persisting, reopened,
-resolved, or unknown findings.
+resolved, or unknown findings. Missing findings remain unknown when coverage is
+incomplete or their original location was not reviewed.
+
+## Publish scan findings
+
+Publish every finding from a completed scan to a Linear team:
+
+```bash
+open-security publish scan /path/to/scan \
+  --to linear \
+  --linear-team TEAM_ID
+```
+
+Add `--linear-project PROJECT_ID` to place the issues in a Linear project, or
+omit it to create issues directly in the team. The existing `--project` flag
+remains an alias. Omit the scan directory to select a
+completed scan interactively. You can also set `CODEX_SECURITY_LINEAR_TEAM` and
+the optional `CODEX_SECURITY_LINEAR_PROJECT` instead of passing the destination
+flags. Add `--dry-run` to preview the issues or `--json` to return
+machine-readable results.
+
+By default, publishing uses your existing Codex sign-in and connected Linear
+app without a separate Linear token. To publish directly through the Linear API
+instead, set `CODEX_SECURITY_LINEAR_API_KEY` to a Linear personal API key.
+Direct publication leaves issues unassigned by default; pass
+`--linear-assignee EMAIL_OR_USER_ID` to select a Linear user:
+
+```bash
+export CODEX_SECURITY_LINEAR_API_KEY=YOUR_LINEAR_PERSONAL_API_KEY
+open-security publish scan /path/to/scan \
+  --to linear \
+  --linear-team TEAM_ID \
+  --linear-project PROJECT_ID \
+  --linear-assignee teammate@example.com
+```
+
+Use `--linear-assignee USER_ID` to select a Linear user ID instead of an email
+address, or omit the flag to leave the issues unassigned.
+
+`--linear-api-key KEY` also selects direct publication and takes precedence
+over the environment variable. Prefer the environment variable to keep API keys
+out of shell history and process listings. Every finding creates a new issue
+containing the scan ID, affected code locations, source snippets, and
+remediation guidance. Choose a destination authorized to receive the
+repository's source code and vulnerability details.
+
+## Verbose diagnostics
+
+Add `--verbose` to print scan diagnostics to stderr:
+
+```bash
+open-security scan . --verbose
+```
+
+`CODEX_SECURITY_LOG_LEVEL=debug` also enables diagnostics;
+`LOG_LEVEL=debug` is its fallback. JSON results remain on stdout.
+
+Verbose diagnostics may contain sensitive data. Review local logs before
+sharing them. Saved failure summaries, bulk-scan receipts, and the normal
+activity feed omit messages that contain recognizable credentials.
+
+Use `open-security scans logs SCAN_ID` to inspect saved session
+events from a scan and its workers. Press `d` during a scan to inspect
+unredacted details; `a`, `m`, and `1`–`9` select all, main, or worker
+sessions. These events can contain credentials.
 
 ## TypeScript SDK
 

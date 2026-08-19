@@ -304,8 +304,18 @@ def parse_args(description: str) -> argparse.Namespace:
     export_findings.add_argument("--scan-id", required=True)
     export_findings.add_argument("--format", choices=EXPORT_FORMATS, required=True)
 
+    for command in ("prepare-linear-publication", "record-linear-publications"):
+        publication = subparsers.add_parser(command)
+        publication.add_argument("--input-file", required=True)
+
     subparsers.add_parser("database-info")
-    return parser.parse_args()
+    arguments = sys.argv[1:]
+    if "--user-context-stdin" in arguments:
+        if arguments.count("--user-context-stdin") != 1 or "--user-context" in arguments:
+            parser.error("pass exactly one user-context transport")
+        index = arguments.index("--user-context-stdin")
+        arguments[index : index + 1] = ["--user-context", sys.stdin.read()]
+    return parser.parse_args(arguments)
 
 
 def non_negative_int(value: str) -> int:

@@ -116,7 +116,8 @@ function hasScanModelKey(config: Readonly<JsonObject>): boolean {
 // ---------------------------------------------------------------------------
 
 export const DEFAULT_CODEX_CONFIG: Readonly<JsonObject> = {
-  approval_policy: "never",
+  approval_policy: "on-request",
+  approvals_reviewer: "auto_review",
   cli_auth_credentials_store: "auto",
   model: "gpt-5.6-sol",
   model_reasoning_effort: "xhigh",
@@ -173,6 +174,15 @@ export function scanModelProvider(config: Readonly<JsonObject>): unknown {
     Object.hasOwn(selectedProfile, "model_provider")
     ? selectedProfile["model_provider"]
     : config["model_provider"];
+}
+
+export function scanApprovalPolicy(
+  config: Readonly<JsonObject>,
+): "never" | "on-request" {
+  return config["approval_policy"] === "never" ||
+    selectedScanProfile(config)?.["approval_policy"] === "never"
+    ? "never"
+    : "on-request";
 }
 
 function selectedScanProfile(

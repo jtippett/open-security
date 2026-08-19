@@ -77,6 +77,28 @@ describe("CLI", () => {
     }
   });
 
+  test("exports the latest completed scan when no directory is provided", async () => {
+    const scanDir = join(tmpdir(), "codex-security-latest-scan");
+    const deps = dependencies({
+      onWorkbench: () => ({ scans: [{ scanId: "latest-scan", scanDir }] }),
+    });
+    let exportedScanDir = "";
+    deps.exportFindings = async (arguments_) => {
+      exportedScanDir = arguments_.scanDir;
+      return new Uint8Array();
+    };
+
+    expect(
+      await main(
+        ["export", "--output", "-"],
+        capture().stream,
+        capture().stream,
+        deps,
+      ),
+    ).toBe(0);
+    expect(exportedScanDir).toBe(scanDir);
+  });
+
   test("waits for delayed stdout writes without closing the destination", async () => {
     let contents = "";
     const stdout = new Writable({
@@ -352,6 +374,64 @@ describe("CLI", () => {
       }
     } finally {
       await rm(directory, { recursive: true, force: true });
+    }
+  });
+
+  test("expands home-relative export paths", async () => {
+    const root = await mkdtemp(join(tmpdir(), "codex-security-export-home-"));
+    const home = join(root, "home");
+    const currentDirectory = join(root, "current");
+    const previousHome = process.env["HOME"];
+    const previousUserProfile = process.env["USERPROFILE"];
+    try {
+      await mkdir(home);
+      await mkdir(currentDirectory);
+      const scan = await copyCompletedScan(home);
+      const sourceRoot = join(home, "source");
+      await mkdir(sourceRoot);
+      process.env["HOME"] = home;
+      process.env["USERPROFILE"] = home;
+
+      const exports: Array<{
+        scanDir: string;
+        output: string;
+        sourceRoot?: string;
+      }> = [];
+      const deps = dependencies({ currentDirectory });
+      deps.exportFindings = async (arguments_) => {
+        exports.push(arguments_);
+        return undefined;
+      };
+      expect(
+        await main(
+          [
+            "export",
+            "~/scan",
+            "--export-format",
+            "sarif",
+            "--output",
+            "~/findings.sarif",
+            "--source-root",
+            "~/source",
+          ],
+          capture().stream,
+          capture().stream,
+          deps,
+        ),
+      ).toBe(0);
+      expect(exports).toEqual([
+        expect.objectContaining({
+          scanDir: await realpath(scan),
+          output: join(await realpath(home), "findings.sarif"),
+          sourceRoot,
+        }),
+      ]);
+    } finally {
+      if (previousHome === undefined) delete process.env["HOME"];
+      else process.env["HOME"] = previousHome;
+      if (previousUserProfile === undefined) delete process.env["USERPROFILE"];
+      else process.env["USERPROFILE"] = previousUserProfile;
+      await rm(root, { recursive: true, force: true });
     }
   });
 

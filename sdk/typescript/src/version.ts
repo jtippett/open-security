@@ -8,7 +8,7 @@ const PACKAGE_VERSIONS = packageVersions(
 export const VERSION = PACKAGE_VERSIONS.package;
 export const CODEX_SDK_VERSION = PACKAGE_VERSIONS.sdk;
 export const CODEX_EXECUTABLE_VERSION = PACKAGE_VERSIONS.executable;
-export const BUNDLED_PLUGIN_VERSION = "0.1.20" as const;
+export const BUNDLED_PLUGIN_VERSION = "0.1.22" as const;
 
 const PACKAGE_NAME = "open-source-security"; // open-models fork: renamed package
 const VERSION_PATTERN =

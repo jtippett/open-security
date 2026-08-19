@@ -77,7 +77,7 @@ export function renderScanHistory(
   const lines = [
     "",
     // open-models fork: renamed history banner
-    `  ${accent("◆")} ${strong("OPEN SECURITY")}  ${accent("/")}  ${strong(labels[command])}`,
+    `  ${accent("◆")} ${strong("OSS")}  ${accent("/")}  ${strong(labels[command])}`,
     `  ${accent("━".repeat(width - 4))}`,
   ];
 
