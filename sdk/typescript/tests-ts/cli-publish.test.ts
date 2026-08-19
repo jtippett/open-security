@@ -473,15 +473,15 @@ describe("publish scan", () => {
         ),
       ).toBe(failed ? 2 : 0);
 
-      expect(stderr.text()).toContain(`codex-security: ${warning}\n`);
+      expect(stderr.text()).toContain(`open-security: ${warning}\n`);
       expect(stderr.text()).toContain(
-        "codex-security: Injected [31m second line \n",
+        "open-security: Injected [31m second line \n",
       );
       expect(stderr.text()).not.toContain("\nsecond line");
       expect(stderr.text()).not.toContain("\u0007");
       if (tty) {
         expect(stderr.text().indexOf("\u001B[?25h\u001B[?1049l")).toBeLessThan(
-          stderr.text().indexOf(`codex-security: ${warning}`),
+          stderr.text().indexOf(`open-security: ${warning}`),
         );
       }
       if (json) {
@@ -1765,7 +1765,7 @@ describe("publish scan", () => {
       ),
     ).toBe(2);
     expect(stderr.text()).toContain(
-      "No completed Codex Security scans are available to publish.",
+      "No completed Open Security scans are available to publish.",
     );
     expect(stdout.text()).toBe("");
     expect(prompted).toBe(false);
@@ -1824,7 +1824,7 @@ describe("publish scan", () => {
       ),
     ).toBe(2);
     expect(stderr.text()).toContain(
-      "No completed Codex Security scans are available to publish.",
+      "No completed Open Security scans are available to publish.",
     );
     expect(stdout.text()).toBe("");
     expect(prompted).toBe(false);
@@ -1993,7 +1993,7 @@ describe("publish scan", () => {
       ),
     ).toBe(0);
     expect(JSON.parse(stdout.text())).toEqual(result);
-    expect(stderr.text()).toBe(`codex-security: ${warning}\n`);
+    expect(stderr.text()).toBe(`open-security: ${warning}\n`);
   });
 
   test("surfaces receipt warnings for default human-readable publication output", async () => {
@@ -2016,7 +2016,7 @@ describe("publish scan", () => {
       ),
     ).toBe(0);
     expect(stdout.text()).toContain("SEC-123");
-    expect(stderr.text()).toBe(`codex-security: ${warning}\n`);
+    expect(stderr.text()).toBe(`open-security: ${warning}\n`);
   });
 
   test("sanitizes receipt warnings while preserving partial publication results", async () => {
@@ -2045,8 +2045,8 @@ describe("publish scan", () => {
     ).toBe(2);
     expect(JSON.parse(stdout.text())).toEqual(result);
     expect(stderr.text()).toBe(
-      "codex-security: Receipt storage failed.  [31mDo not retry publication.\n" +
-        "codex-security: [redacted]\n",
+      "open-security: Receipt storage failed.  [31mDo not retry publication.\n" +
+        "open-security: [redacted]\n",
     );
     expect(stderr.text()).not.toContain("\u001B");
     expect(stderr.text()).not.toContain("SYNTHETIC_RECEIPT_SECRET");

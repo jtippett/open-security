@@ -557,7 +557,7 @@ function publicationPrompt(
       ? "Create issues only in the exact supplied team. Preserve every title, description, and priority exactly."
       : "Create issues only in the exact supplied team and project. Preserve every title, description, and priority exactly.";
   return [
-    "Publish the supplied completed Codex Security scan to Linear.",
+    "Publish the supplied completed Open Security scan to Linear.",
     "Use only the already-connected hosted Linear application.",
     "Do not authenticate, configure an MCP server, use credentials, run unrelated shell commands, or make direct network requests.",
     ...destinationChecks,

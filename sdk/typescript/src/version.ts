@@ -43,7 +43,7 @@ export function updateCommand(
     return `npx ${PACKAGE_NAME}@latest`;
   }
   if (path.includes("/.install/node_modules/")) {
-    return "download and extract the latest Codex Security release";
+    return "download and extract the latest Open Security release";
   }
 
   const global =
@@ -133,7 +133,7 @@ export async function checkForUpdate({
 
 export function formatUpdateNotice(notice: UpdateNotice): string {
   const lines = [
-    `Codex Security update available: ${notice.currentVersion} → ${notice.latestVersion}`,
+    `Open Security update available: ${notice.currentVersion} → ${notice.latestVersion}`,
     `Run: ${notice.command}`,
   ];
   const width = Math.max(...lines.map((line) => line.length));
@@ -206,7 +206,7 @@ function packageVersions(url: URL): {
     }
     return { package: manifest.version, sdk, executable };
   } catch (error) {
-    throw new Error("Unable to read Codex Security package versions.", {
+    throw new Error("Unable to read Open Security package versions.", {
       cause: error,
     });
   }

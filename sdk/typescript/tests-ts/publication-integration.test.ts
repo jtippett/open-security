@@ -434,7 +434,7 @@ describe("database-backed Linear publication integration", () => {
                   expect(finding.arguments).toMatchObject({
                     team: OPTIONS.teamId,
                     project: OPTIONS.projectId,
-                    title: `[Codex Security][HIGH] Synthetic finding ${index + 1}`,
+                    title: `[Open Security][HIGH] Synthetic finding ${index + 1}`,
                     priority: 2,
                   });
                   expect(finding.arguments["description"]).toContain(

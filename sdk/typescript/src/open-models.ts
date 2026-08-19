@@ -119,7 +119,7 @@ function draftRepairPrompt(
   error: string,
 ): string {
   return [
-    `The scan output in ${options.scanDir} failed Codex Security contract validation:`,
+    `The scan output in ${options.scanDir} failed Open Security contract validation:`,
     "",
     error,
     "",
@@ -194,4 +194,61 @@ export function withOpenModelsGuidance(scanPrompt: string | undefined): string {
   ].join("\n");
   const user = scanPrompt?.trim();
   return user ? `${user}\n\n${guidance}` : guidance;
+}
+
+/**
+ * Debug logging for provider token accounting. Set
+ * `CODEX_SECURITY_DEBUG_USAGE=1` to print one stderr line whenever the
+ * scan's aggregated token usage changes, so provider caching behaviour —
+ * for example whether OpenRouter reports cache hits as
+ * `cached_input_tokens` — is observable during a scan. A cached count that
+ * stays at 0 across turns means the provider is not reporting (or not
+ * serving) prompt-cache hits, and input is being billed at the full rate.
+ */
+export interface UsageDebugTokens {
+  input_tokens: number;
+  cached_input_tokens: number;
+  cache_write_input_tokens: number;
+  output_tokens: number;
+  reasoning_output_tokens: number;
+  total_tokens: number;
+}
+
+export function formatUsageDebugLine(
+  usage: UsageDebugTokens,
+  estimatedUsd: number | null,
+): string {
+  const cachePercent =
+    usage.input_tokens > 0
+      ? Math.round((usage.cached_input_tokens / usage.input_tokens) * 100)
+      : 0;
+  return (
+    `open-security: usage input=${usage.input_tokens}` +
+    ` cached=${usage.cached_input_tokens} (${cachePercent}% of input)` +
+    ` cache_writes=${usage.cache_write_input_tokens}` +
+    ` output=${usage.output_tokens}` +
+    ` reasoning=${usage.reasoning_output_tokens}` +
+    ` total=${usage.total_tokens}` +
+    (estimatedUsd === null ? "" : ` est_cost=$${estimatedUsd.toFixed(4)}`)
+  );
+}
+
+let lastUsageDebugLine: string | null = null;
+
+export function usageDebugEnabled(
+  environment: Readonly<Record<string, string | undefined>> = process.env,
+): boolean {
+  const value = environment["CODEX_SECURITY_DEBUG_USAGE"];
+  return value === "1" || value === "true";
+}
+
+export function debugScanUsage(
+  usage: UsageDebugTokens | null,
+  estimatedUsd: number | null,
+): void {
+  if (usage === null || !usageDebugEnabled()) return;
+  const line = formatUsageDebugLine(usage, estimatedUsd);
+  if (line === lastUsageDebugLine) return;
+  lastUsageDebugLine = line;
+  process.stderr.write(`${line}\n`);
 }

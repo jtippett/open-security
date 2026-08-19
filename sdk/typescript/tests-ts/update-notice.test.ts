@@ -112,7 +112,7 @@ describe("CLI update notice", () => {
       [
         {},
         "/release/.install/node_modules/pkg",
-        "download and extract the latest Codex Security release",
+        "download and extract the latest Open Security release",
       ],
       [{}, "/workspace/src/version.ts", `npx ${packageName}`],
     ] as const) {

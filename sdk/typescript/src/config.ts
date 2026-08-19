@@ -295,7 +295,7 @@ function validateOverrideKeys(value: JsonValue): void {
 function validateOverrides(overrides: JsonObject): void {
   if ("plugins" in overrides || "marketplaces" in overrides) {
     throw new ConfigurationError(
-      "Codex Security owns plugin loading configuration.",
+      "Open Security owns plugin loading configuration.",
     );
   }
   const features = overrides["features"];
@@ -306,7 +306,7 @@ function validateOverrides(overrides: JsonObject): void {
   }
   if (isObject(features) && "plugins" in features) {
     throw new ConfigurationError(
-      "Codex Security owns plugin loading configuration.",
+      "Open Security owns plugin loading configuration.",
     );
   }
   const profiles = overrides["profiles"];
@@ -332,7 +332,7 @@ function validateOverrides(overrides: JsonObject): void {
     }
     if (isObject(profileFeatures) && "plugins" in profileFeatures) {
       throw new ConfigurationError(
-        `Codex Security owns plugin loading configuration in profile ${name}.`,
+        `Open Security owns plugin loading configuration in profile ${name}.`,
       );
     }
   }
@@ -342,7 +342,7 @@ function validateNativeMultiAgentV2Overrides(overrides: JsonObject): void {
   const agents = overrides["agents"];
   if (isObject(agents) && "max_threads" in agents) {
     throw new ConfigurationError(
-      "The selected Codex Security plugin requires native multi-agent v2; " +
+      "The selected Open Security plugin requires native multi-agent v2; " +
         "agents.max_threads is a legacy v1 setting. Use " +
         "features.multi_agent_v2.max_concurrent_threads_per_session instead.",
     );
@@ -351,7 +351,7 @@ function validateNativeMultiAgentV2Overrides(overrides: JsonObject): void {
     const features = overrides["features"];
     if (!isObject(features)) {
       throw new ConfigurationError(
-        "The selected Codex Security plugin requires native multi-agent v2; " +
+        "The selected Open Security plugin requires native multi-agent v2; " +
           "features must remain a table containing features.multi_agent_v2.",
       );
     }
@@ -359,13 +359,13 @@ function validateNativeMultiAgentV2Overrides(overrides: JsonObject): void {
       const multiAgentV2 = features["multi_agent_v2"];
       if (!isObject(multiAgentV2)) {
         throw new ConfigurationError(
-          "The selected Codex Security plugin requires native multi-agent v2; " +
+          "The selected Open Security plugin requires native multi-agent v2; " +
             "features.multi_agent_v2 must remain a table with enabled = true.",
         );
       }
       if ("enabled" in multiAgentV2 && multiAgentV2["enabled"] !== true) {
         throw new ConfigurationError(
-          "The selected Codex Security plugin requires native multi-agent v2; " +
+          "The selected Open Security plugin requires native multi-agent v2; " +
             "features.multi_agent_v2.enabled cannot be disabled.",
         );
       }
@@ -383,7 +383,7 @@ function validateNativeMultiAgentV2Overrides(overrides: JsonObject): void {
     const profileAgents = profile["agents"];
     if (isObject(profileAgents) && "max_threads" in profileAgents) {
       throw new ConfigurationError(
-        `The selected Codex Security plugin requires native multi-agent v2; profile ${name} agents.max_threads is a legacy v1 setting.`,
+        `The selected Open Security plugin requires native multi-agent v2; profile ${name} agents.max_threads is a legacy v1 setting.`,
       );
     }
     const profileFeatures = profile["features"];
@@ -396,7 +396,7 @@ function validateNativeMultiAgentV2Overrides(overrides: JsonObject): void {
       ("enabled" in profileV2 && profileV2["enabled"] !== true)
     ) {
       throw new ConfigurationError(
-        `The selected Codex Security plugin requires native multi-agent v2; profile ${name} features.multi_agent_v2 cannot be disabled.`,
+        `The selected Open Security plugin requires native multi-agent v2; profile ${name} features.multi_agent_v2 cannot be disabled.`,
       );
     }
   }

@@ -752,7 +752,7 @@ export class CodexSecurity {
           CODEX_SECURITY_STATE_DIR: stateDirectory,
         },
         signal,
-        failureMessage: "Could not save the Codex Security scan",
+        failureMessage: "Could not save the Open Security scan",
       };
       const registration = await workbench(workbenchOptions, [
         "register-cli-scan",
@@ -811,7 +811,7 @@ export class CodexSecurity {
         typeof registeredRevision !== "string"
       ) {
         throw new CodexSecurityError(
-          "The Codex Security workbench returned an invalid scan registration.",
+          "The Open Security workbench returned an invalid scan registration.",
         );
       }
       const targetRevision =
@@ -856,7 +856,7 @@ export class CodexSecurity {
         {
           ...workbenchOptions,
           failureMessage:
-            "Could not load Codex Security false-positive feedback",
+            "Could not load Open Security false-positive feedback",
         },
         ["get-scan-feedback", "--scan-id", scanId],
       );
@@ -874,7 +874,7 @@ export class CodexSecurity {
         )
       ) {
         throw new CodexSecurityError(
-          "The Codex Security workbench returned invalid false-positive feedback for this scan.",
+          "The Open Security workbench returned invalid false-positive feedback for this scan.",
         );
       }
       checkOpen();
@@ -1568,7 +1568,7 @@ export class CodexSecurity {
     this.#requireOpen();
     if (this.#activeOperation !== null) {
       throw new CodexSecurityError(
-        "A Codex Security operation is already in progress.",
+        "A Open Security operation is already in progress.",
       );
     }
     const activeOperation = operation();
@@ -2072,7 +2072,7 @@ export class CodexSecurity {
         } catch (cleanupError) {
           throw new AggregateError(
             [error, cleanupError],
-            "Codex Security runtime preparation failed and its isolated runtime could not be cleaned up.",
+            "Open Security runtime preparation failed and its isolated runtime could not be cleaned up.",
             { cause: error },
           );
         }
@@ -2152,7 +2152,7 @@ async function prepareDeepScanConfig(
   } catch (error) {
     if (!isRecord(error) || error["code"] !== "ENOENT") {
       throw new CodexSecurityError(
-        `Cannot read Codex Security configuration at ${source}.`,
+        `Cannot read Open Security configuration at ${source}.`,
         { cause: error },
       );
     }
@@ -2160,7 +2160,7 @@ async function prepareDeepScanConfig(
   const existing = configured["deep_scan"];
   if (existing !== undefined && !isRecord(existing)) {
     throw new CodexSecurityError(
-      `Codex Security configuration [deep_scan] at ${source} must be a TOML table.`,
+      `Open Security configuration [deep_scan] at ${source} must be a TOML table.`,
     );
   }
   const overrides: TomlTable = {};
@@ -2242,7 +2242,7 @@ function warnCleanupFailed(
       "onWarning",
       options.onWarning,
       options.onObserverError,
-      `Could not clean up after the Codex Security ${operation}: ${message}`,
+      `Could not clean up after the Open Security ${operation}: ${message}`,
     );
   } catch {}
 }
@@ -2379,19 +2379,19 @@ export async function runScanEvents(
     let { usage } = turn;
     if (options.signal.aborted) {
       throw new ScanInterruptedError(
-        `Codex Security scan was interrupted; partial output remains at ${options.scanDir}.`,
+        `Open Security scan was interrupted; partial output remains at ${options.scanDir}.`,
         options.scanDir,
       );
     }
     if (status !== "completed") {
       throw new IncompleteScanError(
         lastStreamError ??
-          "Codex Security event stream ended before the turn completed.",
+          "Open Security event stream ended before the turn completed.",
       );
     }
     if (threadId === null) {
       throw new IncompleteScanError(
-        "Codex Security did not report a thread ID.",
+        "Open Security did not report a thread ID.",
       );
     }
     if (options.onFinalize !== undefined) {
@@ -2413,7 +2413,7 @@ export async function runScanEvents(
     );
     if (options.signal.aborted) {
       throw new ScanInterruptedError(
-        `Codex Security scan was interrupted; partial output remains at ${options.scanDir}.`,
+        `Open Security scan was interrupted; partial output remains at ${options.scanDir}.`,
         options.scanDir,
       );
     }
@@ -2424,7 +2424,7 @@ export async function runScanEvents(
     }
     if (options.signal.aborted && !(error instanceof ScanInterruptedError)) {
       throw new ScanInterruptedError(
-        `Codex Security scan was interrupted; partial output remains at ${options.scanDir}.`,
+        `Open Security scan was interrupted; partial output remains at ${options.scanDir}.`,
         options.scanDir,
         { cause: error },
       );
@@ -2599,7 +2599,7 @@ function scanPrompt(
   const python = pluginPythonCommand();
   return [
     `Use the installed $codex-security:${skillName} skill at ${shellEnvironmentReference("CODEX_SECURITY_PLUGIN_ROOT", `/skills/${skillName}/SKILL.md`)}.`,
-    "Run this Codex Security scan non-interactively.",
+    "Run this Open Security scan non-interactively.",
     ...(mode === "deep"
       ? [
           `The SDK has already registered this scan. Call start_codex_security_deep_scan with ${JSON.stringify({ scanId })}; never pass targetPath or create another scan.`,
@@ -2771,7 +2771,7 @@ async function collectResult(
   }
   if (missing.length > 0) {
     throw new IncompleteScanError(
-      `Codex Security scan completed without required artifacts: ${missing.join(", ")}`,
+      `Open Security scan completed without required artifacts: ${missing.join(", ")}`,
     );
   }
   const { manifest, findings, coverage } = await loadContract(scanDir, {
@@ -2984,7 +2984,7 @@ function turnFailureMessage(error: unknown): string {
     const message = error["message"].trim();
     if (message.length > 0) return error["message"];
   }
-  return "The Codex Security scan turn failed without a readable error message.";
+  return "The Open Security scan turn failed without a readable error message.";
 }
 
 export function classifyConnectionFailure(
@@ -3256,8 +3256,8 @@ function throwIfAborted(signal?: AbortSignal, scanDir = ""): void {
   if (!signal?.aborted) return;
   if (signal.reason instanceof ScanCostLimitExceededError) throw signal.reason;
   const message = scanDir
-    ? `Codex Security scan was interrupted; partial output remains at ${scanDir}.`
-    : "Codex Security scan was interrupted during preparation.";
+    ? `Open Security scan was interrupted; partial output remains at ${scanDir}.`
+    : "Open Security scan was interrupted during preparation.";
   throw new ScanInterruptedError(message, scanDir, { cause: signal.reason });
 }
 

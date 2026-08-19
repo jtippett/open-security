@@ -23,7 +23,7 @@ export function safeErrorMessage(error: unknown): string {
   return recognizableCredential || sensitiveField ? "[redacted]" : message;
 }
 
-/** Base error for Codex Security SDK failures. */
+/** Base error for Open Security SDK failures. */
 export class CodexSecurityError extends Error {
   public constructor(message: string, options?: ErrorOptions) {
     super(message, options);

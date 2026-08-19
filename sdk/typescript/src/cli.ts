@@ -204,7 +204,7 @@ const DEFAULT_SCAN_MODEL =
 const CODEX_OVERRIDE_DESCRIPTION =
   'Repeat TOML KEY=VALUE; e.g. model_reasoning_effort="high" or features.multi_agent_v2.max_concurrent_threads_per_session=4.';
 const PLUGIN_PATH_DESCRIPTION =
-  "Codex Security plugin directory or ZIP (default: bundled plugin).";
+  "Open Security plugin directory or ZIP (default: bundled plugin).";
 const PYTHON_PATH_DESCRIPTION =
   "Python interpreter (default: PYTHON or automatic discovery).";
 const EXPORT_DEFAULT_OUTPUTS = {
@@ -962,7 +962,7 @@ const DEFAULT_DEPENDENCIES: CliDependencies = {
       const detail = stderr.trim().split("\n").at(-1);
       throw new CodexSecurityError(
         detail?.replace(/^finalize_scan_contract\.py: error: /, "") ||
-          `Could not export Codex Security findings as ${arguments_.format.toUpperCase()}.`,
+          `Could not export Open Security findings as ${arguments_.format.toUpperCase()}.`,
       );
     }
     return undefined;
@@ -978,7 +978,7 @@ const DEFAULT_DEPENDENCIES: CliDependencies = {
         python,
         pluginRoot: await bundledPluginRoot(),
         environment,
-        failureMessage: "Could not read Codex Security scan history",
+        failureMessage: "Could not read Open Security scan history",
       },
       args,
     );
@@ -1096,7 +1096,7 @@ export async function runCodexSkillCommand(
     if (status !== 0) {
       await writeCliOutput(
         output.stderr,
-        `codex-security: ${skillCommandFailure(output.command, status, events?.error ?? diagnostic)}\n`,
+        `open-security: ${skillCommandFailure(output.command, status, events?.error ?? diagnostic)}\n`,
       );
       return status;
     }
@@ -1107,7 +1107,7 @@ export async function runCodexSkillCommand(
     ) {
       await writeCliOutput(
         output.stderr,
-        `codex-security: Codex did not return a completed ${output.command} response.\n`,
+        `open-security: Codex did not return a completed ${output.command} response.\n`,
       );
       return 2;
     }
@@ -1203,7 +1203,7 @@ export async function main(
   const positionals: string[] = [];
   const argumentError = validateCliArguments(argv, positionals);
   if (argumentError !== undefined) {
-    errorOutput.write(`codex-security: ${argumentError}\n`);
+    errorOutput.write(`open-security: ${argumentError}\n`);
     return 2;
   }
   const updateController = new AbortController();
@@ -1240,7 +1240,7 @@ export async function main(
     try {
       return await select(await dependencies.runWorkbench(args));
     } catch (error) {
-      errorOutput.write(`codex-security: ${errorMessage(error)}\n`);
+      errorOutput.write(`open-security: ${errorMessage(error)}\n`);
       exitCode = 2;
       return undefined;
     }
@@ -1334,7 +1334,7 @@ export async function main(
     return result;
   };
   const findingFeedback = Cli.create("findings", {
-    description: "Review and manage saved Codex Security findings.",
+    description: "Review and manage saved Open Security findings.",
   }).command("false-positive", {
     description: "Mark a finding as a false positive for future scans.",
     destructive: true,
@@ -1410,7 +1410,7 @@ export async function main(
   });
   const scanHistory = Cli.create("scans", {
     description:
-      "List, inspect, rerun, match, and compare saved Codex Security scans.",
+      "List, inspect, rerun, match, and compare saved Open Security scans.",
   })
     .command("list", {
       description: "List saved scans for a repository or scan root.",
@@ -1569,7 +1569,7 @@ export async function main(
           scanArguments.verbose = options.verbose;
         } catch (error) {
           const message = errorMessage(error);
-          errorOutput.write(`codex-security: ${message}\n`);
+          errorOutput.write(`open-security: ${message}\n`);
           exitCode = 2;
           return incurError({
             code: "SCAN_REPLAY_UNAVAILABLE",
@@ -1631,7 +1631,7 @@ export async function main(
             format,
           );
         } catch (error) {
-          errorOutput.write(`codex-security: ${errorMessage(error)}\n`);
+          errorOutput.write(`open-security: ${errorMessage(error)}\n`);
           exitCode = 2;
           return undefined;
         }
@@ -1673,7 +1673,7 @@ export async function main(
       },
     });
   const publication = Cli.create("publish", {
-    description: "Publish completed Codex Security scan findings.",
+    description: "Publish completed Open Security scan findings.",
   }).command("scan", {
     description: "Publish every finding from a completed scan to Linear.",
     destructive: true,
@@ -1787,7 +1787,7 @@ export async function main(
           const listedScans = saved["scans"];
           if (!Array.isArray(listedScans)) {
             throw new CodexSecurityError(
-              "Could not read completed Codex Security scans.",
+              "Could not read completed Open Security scans.",
             );
           }
           const scans = (
@@ -1875,7 +1875,7 @@ export async function main(
           });
           if (rows.length === 0) {
             throw new CodexSecurityError(
-              "No completed Codex Security scans are available to publish.",
+              "No completed Open Security scans are available to publish.",
             );
           }
           const repositoryWidth = Math.max(
@@ -1964,7 +1964,7 @@ export async function main(
           for (const warning of result.warnings) {
             if (typeof warning !== "string") continue;
             errorOutput.write(
-              `codex-security: ${diagnosticValue(safeErrorMessage(warning))}\n`,
+              `open-security: ${diagnosticValue(safeErrorMessage(warning))}\n`,
             );
           }
         }
@@ -1993,10 +1993,10 @@ export async function main(
             error === signal
               ? ""
               : ` ${diagnosticValue(safeErrorMessage(error))}`;
-          errorOutput.write(`codex-security: ${reason}${recovery}\n`);
+          errorOutput.write(`open-security: ${reason}${recovery}\n`);
           exitCode = signal === "SIGINT" ? 130 : 143;
         } else {
-          errorOutput.write(`codex-security: ${errorMessage(error)}\n`);
+          errorOutput.write(`open-security: ${errorMessage(error)}\n`);
           exitCode = 2;
         }
         return undefined;
@@ -2011,7 +2011,7 @@ export async function main(
   // open-models fork: renamed CLI program name
   const cli = Cli.create("open-security", {
     description:
-      "Run, validate, patch, export, and publish Codex Security findings.",
+      "Run, validate, patch, export, and publish Open Security findings.",
     version: VERSION,
     mcp: {
       command: "npx --yes open-source-security --mcp",
@@ -2020,7 +2020,7 @@ export async function main(
     },
   })
     .command("scan", {
-      description: "Run a Codex Security scan.",
+      description: "Run a Open Security scan.",
       destructive: true,
       mcp: false,
       args: z.object({
@@ -2085,7 +2085,7 @@ export async function main(
           outputDir: optionValue("--output-dir")
             .optional()
             .describe(
-              "Artifact directory outside the repository (default: Codex Security state; CODEX_SECURITY_STATE_DIR).",
+              "Artifact directory outside the repository (default: Open Security state; CODEX_SECURITY_STATE_DIR).",
             ),
           archiveExisting: z
             .boolean()
@@ -2200,7 +2200,7 @@ export async function main(
       async run({ args, error: incurError, format, options }) {
         if (format === "md") {
           errorOutput.write(
-            "codex-security: Markdown output is not supported for scan results.\n",
+            "open-security: Markdown output is not supported for scan results.\n",
           );
           exitCode = 2;
           return;
@@ -2328,7 +2328,7 @@ export async function main(
             failOnSeverity: options.failOnSeverity,
           };
         } catch (error) {
-          errorOutput.write(`codex-security: ${errorMessage(error)}\n`);
+          errorOutput.write(`open-security: ${errorMessage(error)}\n`);
           exitCode = 2;
           return undefined;
         }
@@ -2501,7 +2501,7 @@ export async function main(
             onProgress: ({ repository, status, attempt, error, warning }) => {
               const detail = error ?? warning;
               errorOutput.write(
-                `codex-security: ${repository} ${status} (attempt ${attempt})${detail === undefined ? "" : `: ${errorMessage(detail)}`}\n`,
+                `open-security: ${repository} ${status} (attempt ${attempt})${detail === undefined ? "" : `: ${errorMessage(detail)}`}\n`,
               );
             },
           });
@@ -2515,7 +2515,7 @@ export async function main(
             (error instanceof Error && error.name === "ExitPromptError"
               ? 130
               : 2);
-          errorOutput.write(`codex-security: ${errorMessage(error)}\n`);
+          errorOutput.write(`open-security: ${errorMessage(error)}\n`);
         } finally {
           dependencies.removeSignalListener("SIGINT", onInterrupt);
           dependencies.removeSignalListener("SIGTERM", onTerminate);
@@ -2625,7 +2625,7 @@ export async function main(
           );
         } catch (error) {
           exitCode = 2;
-          errorOutput.write(`codex-security: ${errorMessage(error)}\n`);
+          errorOutput.write(`open-security: ${errorMessage(error)}\n`);
         }
       },
     })
@@ -2819,7 +2819,7 @@ export async function main(
           );
         } catch (error) {
           exitCode = 2;
-          errorOutput.write(`codex-security: ${safeErrorMessage(error)}\n`);
+          errorOutput.write(`open-security: ${safeErrorMessage(error)}\n`);
         }
       },
     })
@@ -3013,7 +3013,7 @@ export async function main(
   if (frameworkExit !== undefined) {
     if (exitCode !== 0) return exitCode;
     errorOutput.write(
-      `codex-security: ${errorMessage(incurErrorMessage(frameworkOutput))}\n`,
+      `open-security: ${errorMessage(incurErrorMessage(frameworkOutput))}\n`,
     );
     return 2;
   }
@@ -3025,7 +3025,7 @@ export async function main(
     );
     return exitCode;
   } catch (error) {
-    errorOutput.write(`codex-security: ${errorMessage(error)}\n`);
+    errorOutput.write(`open-security: ${errorMessage(error)}\n`);
     return 2;
   }
 }
@@ -3828,7 +3828,7 @@ async function runFindingPatches(
           patch = parsed.data;
         }
       } catch {
-        stderr.write("codex-security: Patch results were not valid JSON.\n");
+        stderr.write("open-security: Patch results were not valid JSON.\n");
         patch = failed("Patch results were not valid JSON.");
       }
     }
@@ -4325,7 +4325,7 @@ async function runExport(
     }
     return 0;
   } catch (error) {
-    errorOutput.write(`codex-security: ${errorMessage(error)}\n`);
+    errorOutput.write(`open-security: ${errorMessage(error)}\n`);
     return 2;
   }
 }
@@ -4481,7 +4481,7 @@ async function executeScan(
     );
     writeAboveProgress(() => {
       errorOutput.write(
-        `codex-security: debug: ${event}${attributes.length === 0 ? "" : ` ${attributes.join(" ")}`}\n`,
+        `open-security: debug: ${event}${attributes.length === 0 ? "" : ` ${attributes.join(" ")}`}\n`,
       );
     });
   };
@@ -4804,7 +4804,7 @@ async function executeScan(
       onTrustedAccessStatus: (status) => {
         if (status === "granted") {
           errorOutput.write(
-            "codex-security: ✓ Your account has Trusted Access for Cyber.\n",
+            "open-security: ✓ Your account has Trusted Access for Cyber.\n",
           );
         }
       },
@@ -4918,7 +4918,7 @@ async function executeScan(
         }
         writeAboveProgress(() => {
           diagnostic("scan.warning", { message });
-          errorOutput.write(`codex-security: warning: ${message}\n`);
+          errorOutput.write(`open-security: warning: ${message}\n`);
         });
       },
       onObserverError: (observer, error) => {
@@ -4929,7 +4929,7 @@ async function executeScan(
         const warning = `${observer} observer failed: ${diagnosticValue(error)}`;
         if (dashboard === null) {
           writeAboveProgress(() => {
-            errorOutput.write(`codex-security: warning: ${warning}\n`);
+            errorOutput.write(`open-security: warning: ${warning}\n`);
           });
         } else {
           dashboard.note(`Warning: ${warning}`);
@@ -5068,15 +5068,15 @@ async function executeScan(
   };
   if (targetWarnings.length > 0) {
     errorOutput.write(
-      "codex-security: Scan target changed during execution; results do not represent the current checkout.\n",
+      "open-security: Scan target changed during execution; results do not represent the current checkout.\n",
     );
     return completedScan(2);
   }
   if (incomplete) {
     errorOutput.write(
       threshold === undefined
-        ? `codex-security: Scan coverage is ${result.coverage.completeness}; results may be incomplete.\n`
-        : `codex-security: Cannot evaluate the failure policy: coverage is ${result.coverage.completeness}.\n`,
+        ? `open-security: Scan coverage is ${result.coverage.completeness}; results may be incomplete.\n`
+        : `open-security: Cannot evaluate the failure policy: coverage is ${result.coverage.completeness}.\n`,
     );
     return completedScan(2);
   }
@@ -5170,7 +5170,7 @@ async function executeScan(
         }
       }
     } catch (error) {
-      errorOutput.write(`codex-security: ${safeErrorMessage(error)}\n`);
+      errorOutput.write(`open-security: ${safeErrorMessage(error)}\n`);
       scanData = { ...scanData, patches };
       return completedScan(2);
     }
@@ -5761,12 +5761,12 @@ function interruptedExit(
 ): number {
   const ctrlC = signal === "SIGINT";
   errorOutput.write(
-    `codex-security: Scan ${ctrlC ? "canceled by Ctrl-C" : "terminated by SIGTERM"}.\n`,
+    `open-security: Scan ${ctrlC ? "canceled by Ctrl-C" : "terminated by SIGTERM"}.\n`,
   );
   errorOutput.write(
     scanDir === null
-      ? "codex-security: No partial output was kept.\n"
-      : `codex-security: Partial output was kept at ${errorMessage(scanDir)}.\n`,
+      ? "open-security: No partial output was kept.\n"
+      : `open-security: Partial output was kept at ${errorMessage(scanDir)}.\n`,
   );
   return ctrlC ? 130 : 143;
 }
@@ -5792,7 +5792,7 @@ if (invokedAsMain()) {
       process.exitCode = exitCode;
     },
     (error: unknown) => {
-      process.stderr.write(`codex-security: ${errorMessage(error)}\n`);
+      process.stderr.write(`open-security: ${errorMessage(error)}\n`);
       process.exitCode = 2;
     },
   );

@@ -70,7 +70,7 @@ async function publicationFixture(
     issues: Array.from({ length: options.count ?? 2 }, (_, index) => ({
       findingId: `finding-${index + 1}`,
       occurrenceId: `occurrence-${index + 1}`,
-      title: `[Codex Security][HIGH] Example finding ${index + 1}`,
+      title: `[Open Security][HIGH] Example finding ${index + 1}`,
       description: `Example finding ${index + 1}`,
       priority: 2,
     })),

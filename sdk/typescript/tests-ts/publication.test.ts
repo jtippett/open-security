@@ -79,7 +79,7 @@ describe("scan publication preparation", () => {
           findingId: "csf_852f90d6e1177502ff113d4a",
           occurrenceId: "occ_e79cb19591e696572a1c22be",
           title:
-            "[Codex Security][HIGH] Unsafe archive extraction can escape the output directory",
+            "[Open Security][HIGH] Unsafe archive extraction can escape the output directory",
           priority: 2,
         },
       ],
@@ -344,7 +344,7 @@ describe("scan publication preparation", () => {
       const issue = (await prepareScanPublication(scanDirectory, DESTINATION))
         .issues[0]!;
       expect(issue.title).toStartWith(
-        `[Codex Security][${severity.toUpperCase()}] `,
+        `[Open Security][${severity.toUpperCase()}] `,
       );
       expect(issue.priority).toBe(priority);
       if (priority === undefined) expect(issue).not.toHaveProperty("priority");

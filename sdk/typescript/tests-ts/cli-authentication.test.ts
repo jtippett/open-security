@@ -67,7 +67,7 @@ describe("CLI authentication", () => {
         join(stateDirectory, "codex-home");
       let forwarded: readonly string[] | undefined;
       deps.createSecurity = () => {
-        throw new Error("must not initialize Codex Security");
+        throw new Error("must not initialize Open Security");
       };
       deps.runCodex = async (args) => {
         forwarded = args;
@@ -655,7 +655,7 @@ describe("CLI authentication", () => {
     const stderr = capture();
     const deps = dependencies();
     deps.createSecurity = () => {
-      throw new Error("must not initialize Codex Security");
+      throw new Error("must not initialize Open Security");
     };
 
     expect(

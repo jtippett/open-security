@@ -1,7 +1,7 @@
 {
   "name": "open-source-security",
   "version": "0.1.14",
-  "description": "TypeScript SDK and CLI for Codex Security",
+  "description": "TypeScript SDK and CLI for Open Security, a fork of Codex Security for open-weight models",
   "license": "Apache-2.0",
   "author": "OpenAI",
   "homepage": "https://developers.openai.com/codex/security",

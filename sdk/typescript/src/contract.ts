@@ -675,7 +675,7 @@ function validateExpectation(
   }
   if (scan.producer.version !== expectation.pluginVersion) {
     throw new ContractValidationError(
-      "Manifest producer version does not match the installed Codex Security plugin.",
+      "Manifest producer version does not match the installed Open Security plugin.",
     );
   }
 

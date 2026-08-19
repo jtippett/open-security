@@ -10,8 +10,10 @@ import {
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
+  formatUsageDebugLine,
   repairDraftContract,
   unsealDraftManifest,
+  usageDebugEnabled,
   withOpenModelsGuidance,
 } from "../src/open-models.js";
 
@@ -252,5 +254,53 @@ describe("withOpenModelsGuidance", () => {
     expect(combined.startsWith("Focus on auth.\n\n")).toBe(true);
     expect(combined.endsWith(guidance)).toBe(true);
     expect(withOpenModelsGuidance("   ")).toBe(guidance);
+  });
+});
+
+describe("usage debugging", () => {
+  test("formats a usage line with cache percentage and cost", () => {
+    const line = formatUsageDebugLine(
+      {
+        input_tokens: 20_000,
+        cached_input_tokens: 15_000,
+        cache_write_input_tokens: 0,
+        output_tokens: 4_000,
+        reasoning_output_tokens: 1_500,
+        total_tokens: 24_000,
+      },
+      0.1234,
+    );
+    expect(line).toBe(
+      "open-security: usage input=20000 cached=15000 (75% of input) " +
+        "cache_writes=0 output=4000 reasoning=1500 total=24000 " +
+        "est_cost=$0.1234",
+    );
+  });
+
+  test("handles zero input and missing cost", () => {
+    const line = formatUsageDebugLine(
+      {
+        input_tokens: 0,
+        cached_input_tokens: 0,
+        cache_write_input_tokens: 0,
+        output_tokens: 0,
+        reasoning_output_tokens: 0,
+        total_tokens: 0,
+      },
+      null,
+    );
+    expect(line).toBe(
+      "open-security: usage input=0 cached=0 (0% of input) " +
+        "cache_writes=0 output=0 reasoning=0 total=0",
+    );
+  });
+
+  test("is enabled by CODEX_SECURITY_DEBUG_USAGE", () => {
+    expect(usageDebugEnabled({})).toBe(false);
+    expect(usageDebugEnabled({ CODEX_SECURITY_DEBUG_USAGE: "0" })).toBe(false);
+    expect(usageDebugEnabled({ CODEX_SECURITY_DEBUG_USAGE: "1" })).toBe(true);
+    expect(usageDebugEnabled({ CODEX_SECURITY_DEBUG_USAGE: "true" })).toBe(
+      true,
+    );
   });
 });

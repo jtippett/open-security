@@ -98,7 +98,7 @@ async function runPublicationWorkbench(
     if (!(await stat(database)).isFile()) throw new Error("not a regular file");
   } catch (error) {
     throw new CodexSecurityError(
-      "Cannot publish findings because the local Codex Security scan-history database does not exist. Use the state directory where this scan was completed.",
+      "Cannot publish findings because the local Open Security scan-history database does not exist. Use the state directory where this scan was completed.",
       { cause: error },
     );
   }
@@ -134,8 +134,8 @@ async function runPublicationWorkbench(
         environment,
         failureMessage:
           command === "prepare-linear-publication"
-            ? "Cannot publish findings without their existing local Codex Security scan history"
-            : "Could not persist created Linear issues in the local Codex Security scan history",
+            ? "Cannot publish findings without their existing local Open Security scan history"
+            : "Could not persist created Linear issues in the local Open Security scan history",
       },
       [command, "--input-file", input],
     );

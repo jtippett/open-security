@@ -140,7 +140,7 @@ async function startDraftScan(
         "-C",
         target,
         "-c",
-        "user.name=Codex Security",
+        "user.name=Open Security",
         "-c",
         "user.email=codex-security@example.invalid",
         "commit",

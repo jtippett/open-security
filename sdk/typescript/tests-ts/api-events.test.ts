@@ -804,7 +804,7 @@ describe("one-shot scan events", () => {
     ).rejects.toMatchObject({
       name: CodexSecurityError.name,
       message:
-        "The Codex Security scan turn failed without a readable error message.",
+        "The Open Security scan turn failed without a readable error message.",
     });
 
     await expect(
@@ -815,7 +815,7 @@ describe("one-shot scan events", () => {
     ).rejects.toMatchObject({
       name: CodexSecurityError.name,
       message:
-        "The Codex Security scan turn failed without a readable error message.",
+        "The Open Security scan turn failed without a readable error message.",
     });
   });
 

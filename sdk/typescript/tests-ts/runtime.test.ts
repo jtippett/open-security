@@ -4460,7 +4460,7 @@ describe("runtime directories and plugin Python boundary", () => {
           python: python!,
           pluginRoot,
           environment: { CODEX_SECURITY_STATE_DIR: stateDirectory },
-          failureMessage: "Could not save the Codex Security scan",
+          failureMessage: "Could not save the Open Security scan",
         },
         ["register-cli-scan"],
       );
@@ -4470,7 +4470,7 @@ describe("runtime directories and plugin Python boundary", () => {
 
     expect(failure).toBeInstanceOf(Error);
     const message = (failure as Error).message;
-    expect(message).toContain("Could not save the Codex Security scan");
+    expect(message).toContain("Could not save the Open Security scan");
     expect(message).toContain(join(stateDirectory, "workbench.sqlite3"));
     expect(message).toContain("SQLite journal files are writable");
     expect(message).toContain("CODEX_SECURITY_STATE_DIR");

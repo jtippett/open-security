@@ -253,6 +253,14 @@ events from a scan and its workers. Press `d` during a scan to inspect
 unredacted details; `a`, `m`, and `1`–`9` select all, main, or worker
 sessions. These events can contain credentials.
 
+Set `CODEX_SECURITY_DEBUG_USAGE=1` to trace token accounting: one stderr line
+prints whenever the scan's aggregated usage changes, showing input, cached
+input, cache writes, output, and reasoning tokens plus the estimated cost.
+Use it to check whether your provider serves and reports prompt-cache hits —
+a `cached=0` count that never moves across turns means input is billed at the
+full rate (OpenRouter passes through each upstream provider's cache
+accounting, so this varies by model).
+
 ## TypeScript SDK
 
 The SDK constructor does not apply the fork's CLI default, so opt in to

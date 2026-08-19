@@ -55,7 +55,7 @@ function preparedPublication(
     issues: Array.from({ length: count }, (_, index) => ({
       findingId: `finding-${index + 1}`,
       occurrenceId: `occurrence-${index + 1}`,
-      title: `[Codex Security][HIGH] Synthetic finding ${index + 1}`,
+      title: `[Open Security][HIGH] Synthetic finding ${index + 1}`,
       description: [
         `**Finding ID:** finding-${index + 1}`,
         `**Occurrence ID:** occurrence-${index + 1}`,
@@ -730,7 +730,7 @@ describe("connected Linear publication", () => {
             arguments: {
               team: "team-example",
               project: "project-example",
-              title: "[Codex Security][HIGH] Synthetic finding 1",
+              title: "[Open Security][HIGH] Synthetic finding 1",
               description: publication.issues[0]!.description,
               priority: 2,
             },

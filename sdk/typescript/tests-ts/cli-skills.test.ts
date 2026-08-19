@@ -793,7 +793,7 @@ describe("CLI skill commands", () => {
           }),
         ),
       ).toBe(2);
-      expect(stderr.text()).toContain("codex-security:");
+      expect(stderr.text()).toContain("open-security:");
       expect(started).toBe(false);
     }
   });

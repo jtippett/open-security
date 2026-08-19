@@ -245,7 +245,7 @@ describe("customer container entrypoint", () => {
         expect(result.status).toBe(2);
         expect(result.stdout).toBe("");
         expect(result.stderr).toBe(
-          "codex-security: restricted Ubuntu hosts require --codex features.use_legacy_landlock=true.\n",
+          "open-security: restricted Ubuntu hosts require --codex features.use_legacy_landlock=true.\n",
         );
       } else {
         expect(result.status).toBe(0);

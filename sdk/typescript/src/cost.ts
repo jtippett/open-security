@@ -10,6 +10,8 @@ import {
 } from "./worker-progress.js";
 // open-models fork: generated OpenRouter catalog prices (pnpm generate:pricing).
 import { OPENROUTER_MODEL_PRICING_NANODOLLARS } from "./openrouter-pricing.js";
+// open-models fork: CODEX_SECURITY_DEBUG_USAGE token-accounting trace.
+import { debugScanUsage } from "./open-models.js";
 
 export interface ScanCost {
   model: string;
@@ -323,6 +325,8 @@ export class ScanCostTracker {
     if (usage === null) return;
     const cost = estimateScanCost(this.#options.model, usage);
     this.#snapshot = { usage, cost };
+    // open-models fork: CODEX_SECURITY_DEBUG_USAGE=1 traces token accounting.
+    debugScanUsage(usage, cost?.estimatedUsd ?? null);
     this.#reportCost(cost);
   }
 

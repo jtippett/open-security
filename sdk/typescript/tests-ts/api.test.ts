@@ -184,8 +184,8 @@ describe("CodexSecurity orchestration", () => {
   test("distinguishes local workbench and database errors from model transport failures", () => {
     for (const message of [
       "sqlite3.OperationalError: unable to open database file\nwith closing(connect()) as connection:",
-      "Could not save the Codex Security scan: database connection failed",
-      "Codex Security workbench: permission denied",
+      "Could not save the Open Security scan: database connection failed",
+      "Open Security workbench: permission denied",
     ]) {
       expect(classifyConnectionFailure(message)).toBe("unknown");
     }
@@ -329,7 +329,7 @@ describe("CodexSecurity orchestration", () => {
       { environment: {} },
     );
     await expect(invalidConfig.preflight(repository)).rejects.toThrow(
-      "Codex Security owns plugin loading configuration",
+      "Open Security owns plugin loading configuration",
     );
     await invalidConfig.close();
     expect(runtimeStarted).toBe(false);
@@ -1427,7 +1427,7 @@ describe("CodexSecurity orchestration", () => {
     await new Promise((resolve) => setTimeout(resolve, 10));
     expect(
       warnings.filter((warning) =>
-        warning.startsWith("Could not clean up after the Codex Security scan:"),
+        warning.startsWith("Could not clean up after the Open Security scan:"),
       ),
     ).toHaveLength(1);
     await client.close();
@@ -4850,7 +4850,7 @@ describe("CodexSecurity orchestration", () => {
     git("add", "tracked.ts");
     git(
       "-c",
-      "user.name=Codex Security",
+      "user.name=Open Security",
       "-c",
       "user.email=codex-security@example.com",
       "commit",
@@ -4957,7 +4957,7 @@ describe("CodexSecurity orchestration", () => {
     git("add", ".");
     git(
       "-c",
-      "user.name=Codex Security",
+      "user.name=Open Security",
       "-c",
       "user.email=codex-security@example.com",
       "commit",
@@ -4972,7 +4972,7 @@ describe("CodexSecurity orchestration", () => {
     git("add", "tracked.ts");
     git(
       "-c",
-      "user.name=Codex Security",
+      "user.name=Open Security",
       "-c",
       "user.email=codex-security@example.com",
       "commit",

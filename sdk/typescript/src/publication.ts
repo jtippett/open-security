@@ -72,7 +72,7 @@ export async function prepareScanPublication(
       return {
         findingId: finding.findingId,
         occurrenceId: finding.occurrenceId,
-        title: `[Codex Security][${finding.severity.level.toUpperCase()}] ${finding.title}`,
+        title: `[Open Security][${finding.severity.level.toUpperCase()}] ${finding.title}`,
         description: renderFindingDescription(contract, finding, uploadedAt),
         ...(priority === undefined ? {} : { priority }),
       };
@@ -88,7 +88,7 @@ function renderFindingDescription(
   const { coverage } = contract;
   const { scan } = contract.manifest;
   const lines = [
-    "## Codex Security finding",
+    "## Open Security finding",
     "",
     `**Scan ID:** ${scan.id}`,
     `**Finding ID:** ${finding.findingId}`,

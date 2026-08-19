@@ -1793,18 +1793,18 @@ describe("CLI", () => {
       .split(/[\r\n]+/u)
       .filter(
         (line) =>
-          line.includes("codex-security: debug:") ||
-          line.includes("codex-security: warning:"),
+          line.includes("open-security: debug:") ||
+          line.includes("open-security: warning:"),
       );
     expect(diagnosticLines.length).toBeGreaterThan(3);
     for (const line of diagnosticLines) {
       expect(
-        line.startsWith("codex-security: debug:") ||
-          line.startsWith("codex-security: warning:"),
+        line.startsWith("open-security: debug:") ||
+          line.startsWith("open-security: warning:"),
       ).toBe(true);
     }
     expect(output).not.toMatch(
-      /\[[0-9:]+\][^\r\n]*codex-security: (?:debug|warning):/u,
+      /\[[0-9:]+\][^\r\n]*open-security: (?:debug|warning):/u,
     );
     expect(output).not.toContain("SYNTHETIC_TTY_SECRET");
     expect(activeTimers.size).toBe(0);
@@ -2320,7 +2320,7 @@ describe("CLI", () => {
     expect(help.text()).toContain(
       "features.multi_agent_v2.max_concurrent_threads_per_session=4",
     );
-    expect(help.text()).toContain("default: Codex Security state");
+    expect(help.text()).toContain("default: Open Security state");
     expect(help.text()).toContain("open-security scan . --model gpt-5.6-terra");
     expect(help.text()).toContain(
       "open-security scan . --model gpt-5.6-terra --effort high",
@@ -2365,7 +2365,7 @@ describe("CLI", () => {
       "Default scan mode for repositories without a CSV mode.",
     );
     expect(help.text()).toContain(
-      "Codex Security plugin directory or ZIP (default: bundled plugin).",
+      "Open Security plugin directory or ZIP (default: bundled plugin).",
     );
     expect(help.text()).toContain(
       "Python interpreter (default: PYTHON or automatic discovery).",
@@ -2980,38 +2980,38 @@ describe("CLI", () => {
     ).toBe(0);
     expect(JSON.parse(stdout.text())).toEqual(result.toJSON());
     expect(stderr.text()).toContain(
-      `codex-security: debug: scan.configuration cli_version=${JSON.stringify(VERSION)}`,
+      `open-security: debug: scan.configuration cli_version=${JSON.stringify(VERSION)}`,
     );
     expect(stderr.text()).toContain(
       `bundled_plugin_version=${JSON.stringify(BUNDLED_PLUGIN_VERSION)}`,
     );
     expect(stderr.text()).toContain(
-      'codex-security: debug: authentication.selected requested="auto" method="api_key" source="OPENAI_API_KEY" verified=false',
+      'open-security: debug: authentication.selected requested="auto" method="api_key" source="OPENAI_API_KEY" verified=false',
     );
     expect(stderr.text()).toContain(
-      'codex-security: debug: scan.output_ready scan_dir="/tmp/scan"',
+      'open-security: debug: scan.output_ready scan_dir="/tmp/scan"',
     );
-    expect(stderr.text()).toContain("codex-security: debug: scan.started");
+    expect(stderr.text()).toContain("open-security: debug: scan.started");
     expect(stderr.text()).toContain(
-      'codex-security: debug: worker.preflight delegation="available" configured_slots=8',
-    );
-    expect(stderr.text()).toContain(
-      'codex-security: debug: worker.phase phase="validation" planned=6 started=3',
+      'open-security: debug: worker.preflight delegation="available" configured_slots=8',
     );
     expect(stderr.text()).toContain(
-      'codex-security: debug: connection.retry reason="rate_limit" attempt=2 max_attempts=5 retry_after_seconds=1.2',
+      'open-security: debug: worker.phase phase="validation" planned=6 started=3',
     );
     expect(stderr.text()).toContain(
-      'codex-security: debug: cost.updated model="gpt-5.6-sol"',
+      'open-security: debug: connection.retry reason="rate_limit" attempt=2 max_attempts=5 retry_after_seconds=1.2',
     );
     expect(stderr.text()).toContain(
-      'codex-security: debug: scan.completed coverage="complete" findings=1',
+      'open-security: debug: cost.updated model="gpt-5.6-sol"',
     );
     expect(stderr.text()).toContain(
-      "codex-security: debug: runtime.cleanup.started",
+      'open-security: debug: scan.completed coverage="complete" findings=1',
     );
     expect(stderr.text()).toContain(
-      "codex-security: debug: runtime.cleanup.completed",
+      "open-security: debug: runtime.cleanup.started",
+    );
+    expect(stderr.text()).toContain(
+      "open-security: debug: runtime.cleanup.completed",
     );
     expect(stderr.text()).not.toContain("SYNTHETIC_VERBOSE_SECRET");
   });
@@ -3033,7 +3033,7 @@ describe("CLI", () => {
       .text()
       .split("\n")
       .find((line) =>
-        line.startsWith("codex-security: debug: scan.configuration"),
+        line.startsWith("open-security: debug: scan.configuration"),
       );
     expect(configuration).toBeDefined();
     expect(configuration).toContain(
@@ -3057,9 +3057,7 @@ describe("CLI", () => {
       ),
     ).toBe(0);
     expect(JSON.parse(stdout.text())).toEqual(fakeResult().toJSON());
-    expect(stderr.text()).toContain(
-      "codex-security: debug: scan.configuration",
-    );
+    expect(stderr.text()).toContain("open-security: debug: scan.configuration");
     expect(stderr.text()).toContain('reasoning_effort="high"');
   });
 
@@ -3142,7 +3140,7 @@ describe("CLI", () => {
         .text()
         .split("\n")
         .find((line) =>
-          line.startsWith("codex-security: debug: scan.configuration"),
+          line.startsWith("open-security: debug: scan.configuration"),
         );
       expect(configuration).toBeDefined();
       expect(configuration).toContain('profile="review"');
@@ -3180,11 +3178,9 @@ describe("CLI", () => {
       ),
     ).toBe(0);
     expect(JSON.parse(stdout.text())).toEqual(fakeResult().toJSON());
-    expect(stderr.text()).toContain(
-      "codex-security: debug: scan.configuration",
-    );
-    expect(stderr.text()).toContain("codex-security: debug: scan.started");
-    expect(stderr.text()).toContain("codex-security: debug: scan.completed");
+    expect(stderr.text()).toContain("open-security: debug: scan.configuration");
+    expect(stderr.text()).toContain("open-security: debug: scan.started");
+    expect(stderr.text()).toContain("open-security: debug: scan.completed");
     expect(stderr.text()).toContain('model="gpt-original"');
     expect(stderr.text()).toContain('reasoning_effort="high"');
   });
@@ -3225,7 +3221,7 @@ describe("CLI", () => {
       .text()
       .split("\n")
       .find((line) =>
-        line.startsWith("codex-security: debug: scan.configuration"),
+        line.startsWith("open-security: debug: scan.configuration"),
       );
     expect(configuration).toBeDefined();
     expect(configuration).toContain('profile="review"');
@@ -3309,11 +3305,9 @@ describe("CLI", () => {
       ),
     ).toBe(0);
     expect(JSON.parse(stdout.text())).toEqual(fakeResult().toJSON());
-    expect(stderr.text()).toContain(
-      "codex-security: debug: scan.configuration",
-    );
-    expect(stderr.text()).toContain("codex-security: debug: scan.started");
-    expect(stderr.text()).toContain("codex-security: debug: scan.completed");
+    expect(stderr.text()).toContain("open-security: debug: scan.configuration");
+    expect(stderr.text()).toContain("open-security: debug: scan.started");
+    expect(stderr.text()).toContain("open-security: debug: scan.completed");
   });
 
   test("accepts Promptfoo-compatible LOG_LEVEL as a verbose fallback", async () => {
@@ -3334,10 +3328,8 @@ describe("CLI", () => {
       ),
     ).toBe(0);
     expect(JSON.parse(stdout.text())).toEqual(fakeResult().toJSON());
-    expect(stderr.text()).toContain(
-      "codex-security: debug: scan.configuration",
-    );
-    expect(stderr.text()).toContain("codex-security: debug: scan.completed");
+    expect(stderr.text()).toContain("open-security: debug: scan.configuration");
+    expect(stderr.text()).toContain("open-security: debug: scan.completed");
   });
 
   test("prefers CODEX_SECURITY_LOG_LEVEL over a shared LOG_LEVEL", async () => {
@@ -3358,7 +3350,7 @@ describe("CLI", () => {
       ),
     ).toBe(0);
     expect(JSON.parse(stdout.text())).toEqual(fakeResult().toJSON());
-    expect(stderr.text()).not.toContain("codex-security: debug:");
+    expect(stderr.text()).not.toContain("open-security: debug:");
   });
 
   test("lets --verbose override non-debug environment log levels", async () => {
@@ -3379,10 +3371,8 @@ describe("CLI", () => {
       ),
     ).toBe(0);
     expect(JSON.parse(stdout.text())).toEqual(fakeResult().toJSON());
-    expect(stderr.text()).toContain(
-      "codex-security: debug: scan.configuration",
-    );
-    expect(stderr.text()).toContain("codex-security: debug: scan.completed");
+    expect(stderr.text()).toContain("open-security: debug: scan.configuration");
+    expect(stderr.text()).toContain("open-security: debug: scan.completed");
   });
 
   test("does not emit verbose diagnostics unless explicitly requested", async () => {
@@ -3398,7 +3388,7 @@ describe("CLI", () => {
       ),
     ).toBe(0);
     expect(JSON.parse(stdout.text())).toEqual(fakeResult().toJSON());
-    expect(stderr.text()).not.toContain("codex-security: debug:");
+    expect(stderr.text()).not.toContain("open-security: debug:");
   });
 
   test("keeps verbose dry-run authentication unverified without starting a scan", async () => {
@@ -3440,9 +3430,9 @@ describe("CLI", () => {
     ).toBe(0);
     expect(JSON.parse(stdout.text())).toEqual({ dryRun: true, ...preflight });
     expect(stderr.text()).toContain(
-      'codex-security: debug: scan.preflight.completed model="gpt-5.6-sol" reasoning_effort="xhigh" method="api_key" source="OPENAI_API_KEY" verified=false',
+      'open-security: debug: scan.preflight.completed model="gpt-5.6-sol" reasoning_effort="xhigh" method="api_key" source="OPENAI_API_KEY" verified=false',
     );
-    expect(stderr.text()).not.toContain("codex-security: debug: scan.started");
+    expect(stderr.text()).not.toContain("open-security: debug: scan.started");
     expect(stderr.text()).not.toContain("SYNTHETIC_DRY_RUN_SECRET");
     expect(scanStarted).toBe(false);
   });
@@ -3510,7 +3500,7 @@ describe("CLI", () => {
         const diagnostic = stderr
           .text()
           .split("\n")
-          .find((line) => line.startsWith(`codex-security: debug: ${event}`));
+          .find((line) => line.startsWith(`open-security: debug: ${event}`));
 
         expect(diagnostic).toBeDefined();
         expect(diagnostic).toContain(`model=${JSON.stringify(scenario.model)}`);
@@ -3546,7 +3536,7 @@ describe("CLI", () => {
       ),
     ).toBe(2);
     expect(stderr.text()).toContain(
-      'codex-security: debug: scan.failed classification="unauthorized"',
+      'open-security: debug: scan.failed classification="unauthorized"',
     );
     expect(stderr.text()).toContain("OPENAI_API_KEY");
     expect(stderr.text()).not.toContain("org-private");
@@ -3580,7 +3570,7 @@ describe("CLI", () => {
     const failureDiagnostic = stderr
       .text()
       .split("\n")
-      .find((line) => line.startsWith("codex-security: debug: scan.failed"));
+      .find((line) => line.startsWith("open-security: debug: scan.failed"));
 
     expect(failureDiagnostic).toBeDefined();
     expect(failureDiagnostic).toContain('classification="unknown"');
@@ -3726,7 +3716,7 @@ describe("CLI", () => {
       ).toBe(0);
       expect(JSON.parse(stdout.text())).toEqual(fakeResult().toJSON());
       expect(stderr.text()).toContain(
-        "codex-security: warning: Provider warning",
+        "open-security: warning: Provider warning",
       );
       expect(stderr.text()).toContain("organization private");
       expect(stderr.text()).toContain("request private");
@@ -3742,10 +3732,10 @@ describe("CLI", () => {
     deps.createSecurity = () => ({
       run: async (_repository, options) => {
         options?.onOutputDirReady?.(
-          `/tmp/scan${separators}codex-security: debug: forged`,
+          `/tmp/scan${separators}open-security: debug: forged`,
         );
         options?.onWarning?.(
-          `Scanner warning${separators}codex-security: debug: forged`,
+          `Scanner warning${separators}open-security: debug: forged`,
         );
         return fakeResult();
       },
@@ -3767,7 +3757,7 @@ describe("CLI", () => {
     const diagnostics = stderr
       .text()
       .split("\n")
-      .filter((line) => line.startsWith("codex-security: debug:"));
+      .filter((line) => line.startsWith("open-security: debug:"));
 
     expect(diagnostics.some((line) => line.includes("scan.output_ready"))).toBe(
       true,
@@ -3777,7 +3767,7 @@ describe("CLI", () => {
     );
     for (const diagnostic of diagnostics) {
       expect(diagnostic).not.toMatch(/[\u0085\u2028\u2029]/u);
-      expect(diagnostic).not.toMatch(/^codex-security: debug: forged$/u);
+      expect(diagnostic).not.toMatch(/^open-security: debug: forged$/u);
     }
   });
 
@@ -3813,13 +3803,13 @@ describe("CLI", () => {
     ).toBe(0);
     expect(JSON.parse(stdout.text())).toEqual(fakeResult().toJSON());
     expect(stderr.text()).toContain(
-      'codex-security: debug: scan.output_archived archive_dir="/tmp/archive_sk-proj-SYNTHETIC_ARCHIVE_SECRET_123"',
+      'open-security: debug: scan.output_archived archive_dir="/tmp/archive_sk-proj-SYNTHETIC_ARCHIVE_SECRET_123"',
     );
     expect(stderr.text()).toContain(
-      'codex-security: debug: scan.output_ready scan_dir="/tmp/scan_sk-proj-SYNTHETIC_OUTPUT_SECRET_123"',
+      'open-security: debug: scan.output_ready scan_dir="/tmp/scan_sk-proj-SYNTHETIC_OUTPUT_SECRET_123"',
     );
     expect(stderr.text()).toContain(
-      'codex-security: debug: scan.observer_failed observer="onWorkerStatus"',
+      'open-security: debug: scan.observer_failed observer="onWorkerStatus"',
     );
     expect(stderr.text()).toContain("SYNTHETIC");
   });
@@ -3856,7 +3846,7 @@ describe("CLI", () => {
       .text()
       .split("\n")
       .find((line) =>
-        line.startsWith("codex-security: debug: scan.observer_failed"),
+        line.startsWith("open-security: debug: scan.observer_failed"),
       );
 
     expect(observerDiagnostic).toBeDefined();
@@ -3892,7 +3882,7 @@ describe("CLI", () => {
       const diagnostic = stderr
         .text()
         .split("\n")
-        .find((line) => line.startsWith(`codex-security: debug: ${event}`));
+        .find((line) => line.startsWith(`open-security: debug: ${event}`));
 
       expect(diagnostic).toBeDefined();
       expect(diagnostic).toContain('classification="unknown"');
@@ -4011,7 +4001,7 @@ describe("CLI", () => {
 
   test("surfaces underlying scanner errors instead of inventing a model outage", async () => {
     for (const message of [
-      "Could not save the Codex Security scan: UNIQUE constraint failed: scans.scan_dir",
+      "Could not save the Open Security scan: UNIQUE constraint failed: scans.scan_dir",
       "sandbox-exec: sandbox_apply: Operation not permitted during network setup.",
       "network failure ECONNRESET while connecting to the model.",
       "request timed out while reading the scanner response.",
@@ -4033,7 +4023,7 @@ describe("CLI", () => {
       ).toBe(2);
       expect(stdout.text()).toBe("");
       expect(stderr.text()).toContain(`${message}\n`);
-      expect(stderr.text()).not.toContain("codex-security:");
+      expect(stderr.text()).not.toContain("open-security:");
       expect(stderr.text()).not.toContain("model service could not be reached");
     }
   });
@@ -4171,7 +4161,7 @@ describe("CLI", () => {
       run: async () => {
         throw new CodexSecurityError(
           [
-            "Could not save the Codex Security scan: Traceback (most recent call last):",
+            "Could not save the Open Security scan: Traceback (most recent call last):",
             "    with closing(connect()) as connection:",
             "sqlite3.OperationalError: unable to open database file",
             "token=sk-proj-SYNTHETIC_DATABASE_SECRET_123",
@@ -4183,7 +4173,7 @@ describe("CLI", () => {
     });
 
     expect(await main(["scan"], stdout.stream, stderr.stream, deps)).toBe(2);
-    expect(stderr.text()).toContain("Could not save the Codex Security scan");
+    expect(stderr.text()).toContain("Could not save the Open Security scan");
     expect(stderr.text()).toContain("unable to open database file");
     expect(stderr.text()).not.toContain("model service could not be reached");
     expect(stderr.text()).not.toContain("Check your network connection");
@@ -4224,7 +4214,7 @@ describe("CLI", () => {
         "  RESULTS   /tmp/scan",
       ].join("\n"),
     );
-    expect(stderr.text()).not.toContain("codex-security:");
+    expect(stderr.text()).not.toContain("open-security:");
     expect(stderr.text()).not.toContain("Next:");
   });
 
@@ -4340,7 +4330,7 @@ describe("CLI", () => {
         ...fakeResult().toJSON(),
         warnings: [warning],
       });
-      expect(stderr.text()).toContain(`codex-security: warning: ${warning}`);
+      expect(stderr.text()).toContain(`open-security: warning: ${warning}`);
       expect(stderr.text()).toContain(
         "Scan target changed during execution; results do not represent the current checkout.",
       );
@@ -4368,7 +4358,7 @@ describe("CLI", () => {
         await main(["scan", ".", "--json"], stdout.stream, stderr.stream, deps),
       ).toBe(0);
       expect(JSON.parse(stdout.text())).toEqual(fakeResult().toJSON());
-      expect(stderr.text()).toContain(`codex-security: warning: ${warning}`);
+      expect(stderr.text()).toContain(`open-security: warning: ${warning}`);
     }
   });
 
@@ -4397,10 +4387,10 @@ describe("CLI", () => {
     ).toBe(0);
     expect(JSON.parse(stdout.text())).toEqual(fakeResult().toJSON());
     expect(stderr.text()).toContain(
-      'codex-security: debug: scan.warning message="Repository HEAD changed during the scan: sk-proj-SYNTHETIC_WARNING_SECRET_123"',
+      'open-security: debug: scan.warning message="Repository HEAD changed during the scan: sk-proj-SYNTHETIC_WARNING_SECRET_123"',
     );
     expect(stderr.text()).toContain(
-      "codex-security: warning: Repository HEAD changed during the scan: sk-proj-SYNTHETIC_WARNING_SECRET_123",
+      "open-security: warning: Repository HEAD changed during the scan: sk-proj-SYNTHETIC_WARNING_SECRET_123",
     );
     expect(stderr.text()).toContain("SYNTHETIC_WARNING_SECRET");
   });
@@ -4423,7 +4413,7 @@ describe("CLI", () => {
     ).toBe(0);
     expect(JSON.parse(stdout.text())).toEqual(fakeResult().toJSON());
     expect(stderr.text()).toContain(
-      "codex-security: ✓ Your account has Trusted Access for Cyber.\n",
+      "open-security: ✓ Your account has Trusted Access for Cyber.\n",
     );
     expect(stderr.text()).not.toContain("warning:");
   });
@@ -4448,7 +4438,7 @@ describe("CLI", () => {
     ).toBe(0);
     expect(JSON.parse(stdout.text())).toEqual(fakeResult().toJSON());
     expect(stderr.text()).toContain(
-      "codex-security: warning: Some cybersecurity requests or findings may be refused because your account does not have Trusted Access for Cyber.",
+      "open-security: warning: Some cybersecurity requests or findings may be refused because your account does not have Trusted Access for Cyber.",
     );
     expect(stderr.text()).toContain("Apply at https://chatgpt.com/cyber.");
   });
@@ -4473,7 +4463,7 @@ describe("CLI", () => {
     ).toBe(0);
     expect(JSON.parse(stdout.text())).toEqual(fakeResult().toJSON());
     expect(stderr.text()).toContain(
-      "codex-security: warning: Some cybersecurity requests or findings may be refused because your Trusted Access for Cyber status could not be verified.",
+      "open-security: warning: Some cybersecurity requests or findings may be refused because your Trusted Access for Cyber status could not be verified.",
     );
     expect(stderr.text()).toContain(
       "Check your access or apply at https://chatgpt.com/cyber.",
@@ -4501,7 +4491,7 @@ describe("CLI", () => {
         await main(["scan", ".", "--json"], stdout.stream, stderr.stream, deps),
       ).toBe(0);
       expect(JSON.parse(stdout.text())).toEqual(fakeResult().toJSON());
-      expect(stderr.text()).toContain(`codex-security: warning: ${warning}\n`);
+      expect(stderr.text()).toContain(`open-security: warning: ${warning}\n`);
       expect(stderr.text()).not.toContain("chatgpt.com/cyber");
     }
   });
@@ -4527,7 +4517,7 @@ describe("CLI", () => {
     ).toBe(0);
     expect(JSON.parse(stdout.text())).toEqual(fakeResult().toJSON());
     expect(stderr.text()).toContain(
-      `codex-security: warning: onWorkerStatus observer failed: status observer failed ${SYNTHETIC_CREDENTIALS}`,
+      `open-security: warning: onWorkerStatus observer failed: status observer failed ${SYNTHETIC_CREDENTIALS}`,
     );
     expect(stderr.text()).toContain("SYNTHETIC_OPENAI_VALUE_123");
   });
@@ -4776,7 +4766,7 @@ describe("CLI", () => {
       ),
     ).toBe(0);
     expect(JSON.parse(stdout.text())).toEqual(result.toJSON());
-    expect(stderr.text()).toContain("codex-security: debug: cost.updated");
+    expect(stderr.text()).toContain("open-security: debug: cost.updated");
     expect(stderr.text()).toContain("cache_write_input_tokens=200");
   });
 
@@ -5302,7 +5292,7 @@ describe("CLI", () => {
       "Isolated Codex runtime directory must be outside the scanned directory and any enclosing Git worktree.",
     );
     expect(stderr.text()).toContain(`Partial output was kept at ${partial}.`);
-    expect(stderr.text()).not.toContain("codex-security:");
+    expect(stderr.text()).not.toContain("open-security:");
   });
 
   test("preserves complete protected-root diagnostics", async () => {

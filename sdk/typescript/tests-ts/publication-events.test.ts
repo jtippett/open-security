@@ -15,7 +15,7 @@ function publication(count = 1): PreparedScanPublication {
     issues: Array.from({ length: count }, (_, index) => ({
       findingId: `finding_${index}`,
       occurrenceId: `occurrence_${index}`,
-      title: `[Codex Security][HIGH] Finding ${index}`,
+      title: `[Open Security][HIGH] Finding ${index}`,
       description: [
         `**Finding ID:** finding_${index}`,
         `**Occurrence ID:** occurrence_${index}`,

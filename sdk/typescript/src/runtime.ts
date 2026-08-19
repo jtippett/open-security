@@ -165,7 +165,7 @@ export async function prepareCodexSecurityCredentialHome(
           (!existing.isDirectory() || existing.isSymbolicLink())
         ) {
           throw new OutputDirectoryError(
-            `Codex Security credential home is not a directory: ${path}`,
+            `Open Security credential home is not a directory: ${path}`,
             { cause: error },
           );
         }
@@ -176,7 +176,7 @@ export async function prepareCodexSecurityCredentialHome(
     const metadata = await lstat(path, { bigint: true });
     if (!metadata.isDirectory() || metadata.isSymbolicLink()) {
       throw new OutputDirectoryError(
-        `Codex Security credential home is not a directory: ${path}`,
+        `Open Security credential home is not a directory: ${path}`,
       );
     }
     const canonical = await realpath(path);
@@ -189,7 +189,7 @@ export async function prepareCodexSecurityCredentialHome(
   } catch (error) {
     if (error instanceof OutputDirectoryError) throw error;
     throw new OutputDirectoryError(
-      `Unable to prepare the Codex Security credential home: ${path}`,
+      `Unable to prepare the Open Security credential home: ${path}`,
       { cause: error },
     );
   }
@@ -221,14 +221,14 @@ export async function requireSecureCredentialHome(
       metadata = await lstat(path, { bigint: true });
     } catch (error) {
       throw new OutputDirectoryError(
-        `Unable to inspect the Codex Security credential home: ${path}`,
+        `Unable to inspect the Open Security credential home: ${path}`,
         { cause: error },
       );
     }
   }
   if (!metadata.isDirectory() || metadata.isSymbolicLink()) {
     throw new OutputDirectoryError(
-      `Codex Security credential home is not a directory: ${path}`,
+      `Open Security credential home is not a directory: ${path}`,
     );
   }
   const canonical = await realpath(path);
@@ -239,13 +239,13 @@ export async function requireSecureCredentialHome(
     canonicalMetadata.ino !== metadata.ino
   ) {
     throw new OutputDirectoryError(
-      `Codex Security credential home was replaced: ${canonical}`,
+      `Open Security credential home was replaced: ${canonical}`,
     );
   }
   metadata = canonicalMetadata;
   if (!metadata.isDirectory() || metadata.isSymbolicLink()) {
     throw new OutputDirectoryError(
-      `Codex Security credential home is not a directory: ${path}`,
+      `Open Security credential home is not a directory: ${path}`,
     );
   }
   if (
@@ -255,7 +255,7 @@ export async function requireSecureCredentialHome(
       metadata.ino !== options.expectedInode)
   ) {
     throw new OutputDirectoryError(
-      `Codex Security credential home was replaced: ${canonical}`,
+      `Open Security credential home was replaced: ${canonical}`,
     );
   }
   if (platform !== "win32" || options.validateWindowsAcl !== false) {
@@ -1096,7 +1096,7 @@ export async function acquireCodexSecurityCredentialHomeLock(
       };
       if (owner.token !== token) {
         throw new PluginBootstrapError(
-          "The Codex Security credential-home lock is no longer owned by this scan.",
+          "The Open Security credential-home lock is no longer owned by this scan.",
         );
       }
       await rm(lock, { recursive: true, force: true });
@@ -1113,7 +1113,7 @@ async function recoverStaleCredentialHomeLock(lock: string): Promise<boolean> {
   if (metadata === null) return true;
   if (!metadata.isDirectory() || metadata.isSymbolicLink()) {
     throw new OutputDirectoryError(
-      `Codex Security credential-home lock is not a directory: ${lock}`,
+      `Open Security credential-home lock is not a directory: ${lock}`,
     );
   }
 
@@ -1198,7 +1198,7 @@ export async function codexSecurityCredentialAllowsAmbientImport(
     const marker = await lstat(join(codexHome, CREDENTIAL_LOGOUT_MARKER));
     if (!marker.isFile() || marker.isSymbolicLink()) {
       throw new OutputDirectoryError(
-        `Codex Security logout marker is not a regular file: ${codexHome}`,
+        `Open Security logout marker is not a regular file: ${codexHome}`,
       );
     }
     return false;
@@ -1222,7 +1222,7 @@ export async function codexSecurityHasStoredFileCredentials(
   }
   if (!metadata.isFile() || metadata.isSymbolicLink()) {
     throw new OutputDirectoryError(
-      `Codex Security stored authentication is not a regular file: ${path}`,
+      `Open Security stored authentication is not a regular file: ${path}`,
     );
   }
   requirePrivateCredentialFile(metadata, path);
@@ -1237,12 +1237,12 @@ export function requirePrivateCredentialFile(
   if (process.platform === "win32") return;
   if ((metadata.mode & 0o077) !== 0) {
     throw new OutputDirectoryError(
-      `Codex Security stored authentication must not be accessible to other users: ${path}`,
+      `Open Security stored authentication must not be accessible to other users: ${path}`,
     );
   }
   if (effectiveUid !== undefined && metadata.uid !== effectiveUid) {
     throw new OutputDirectoryError(
-      `Codex Security stored authentication must be owned by the current user: ${path}`,
+      `Open Security stored authentication must be owned by the current user: ${path}`,
     );
   }
 }
@@ -1257,7 +1257,7 @@ export async function preserveCodexSecurityPluginRegistration(
   } catch (error) {
     if (nodeErrorCode(error) === "ENOENT") return config;
     throw new PluginBootstrapError(
-      "Unable to read the existing Codex Security plugin registration.",
+      "Unable to read the existing Open Security plugin registration.",
       { cause: error },
     );
   }
@@ -1386,7 +1386,7 @@ export async function runWorkbench(
         detail,
       );
     const failure =
-      options.failureMessage ?? "Could not run the Codex Security workbench";
+      options.failureMessage ?? "Could not run the Open Security workbench";
     throw new CodexSecurityError(
       databaseFailure
         ? `${failure}: cannot open the workbench database at ${join(
@@ -1402,13 +1402,13 @@ export async function runWorkbench(
     result = JSON.parse(stdout);
   } catch (error) {
     throw new CodexSecurityError(
-      "The Codex Security workbench returned invalid JSON.",
+      "The Open Security workbench returned invalid JSON.",
       { cause: error },
     );
   }
   if (!isRecord(result)) {
     throw new CodexSecurityError(
-      "The Codex Security workbench returned an invalid response.",
+      "The Open Security workbench returned an invalid response.",
     );
   }
   return result as JsonObject;
@@ -1435,7 +1435,7 @@ export async function bundledPluginRoot(): Promise<string> {
     }
   }
   throw new PluginBootstrapError(
-    "The bundled Codex Security plugin is missing.",
+    "The bundled Open Security plugin is missing.",
   );
 }
 
@@ -2007,7 +2007,7 @@ export async function createMarketplace(
   throwIfSignalAborted(signal);
   const manifest = {
     name: MARKETPLACE_NAME,
-    interface: { displayName: "Codex Security SDK" },
+    interface: { displayName: "Open Security SDK" },
     plugins: [
       {
         name: PLUGIN_NAME,
@@ -2112,7 +2112,7 @@ export async function bootstrapPlugin(
   });
   if (existing !== null && !existing.isDirectory()) {
     throw new PluginBootstrapError(
-      `Codex Security plugin marketplace path must be a directory: ${marketplace}`,
+      `Open Security plugin marketplace path must be a directory: ${marketplace}`,
     );
   }
 
@@ -2280,7 +2280,7 @@ export async function resolvePluginPython(
     if (resolved !== null) return resolved;
   }
   throw new PluginPythonUnavailableError(
-    "The bundled Codex Security plugin requires Python 3.10 or later (Python 3.10 also requires tomli), but no usable interpreter was found. " +
+    "The bundled Open Security plugin requires Python 3.10 or later (Python 3.10 also requires tomli), but no usable interpreter was found. " +
       "Set pythonPath, --python, or PYTHON, install the Codex managed runtime, or add python3/python (py on Windows) to PATH.",
   );
 }
@@ -2387,7 +2387,7 @@ async function discoverPluginRoot(root: string): Promise<string> {
       return await validatePluginRoot(candidate);
   }
   throw new PluginBootstrapError(
-    "Plugin ZIP must contain Codex Security at its root or in one top-level directory.",
+    "Plugin ZIP must contain Open Security at its root or in one top-level directory.",
   );
 }
 
@@ -2488,7 +2488,7 @@ async function requirePython(
   if (resolved !== null) return resolved;
   throw new PluginPythonUnavailableError(
     `The ${source} interpreter is unavailable or unusable: ${candidate}. ` +
-      "The bundled Codex Security plugin requires Python 3.10 or later for scan execution; Python 3.10 also requires tomli.",
+      "The bundled Open Security plugin requires Python 3.10 or later for scan execution; Python 3.10 also requires tomli.",
   );
 }
 

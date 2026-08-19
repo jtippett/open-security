@@ -161,7 +161,7 @@ export function validatedGitEnvironment(
   );
   if (unsupported !== undefined) {
     throw new InvalidTargetError(
-      `${unsupported[0]} is not supported for Codex Security scans.`,
+      `${unsupported[0]} is not supported for Open Security scans.`,
     );
   }
 }
