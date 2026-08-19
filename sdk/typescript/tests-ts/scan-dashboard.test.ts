@@ -17,7 +17,7 @@ function fakeClock(now: () => number = () => STARTED_AT) {
 
 function lastFrame(stderr: ReturnType<typeof capture>): string {
   return stripVTControlCharacters(stderr.text())
-    .split("CODEX SECURITY  ·  juice-shop")
+    .split("OPEN SECURITY  ·  juice-shop")
     .at(-1)!;
 }
 
@@ -239,7 +239,7 @@ describe("live scan dashboard", () => {
     dashboard.stop();
 
     const text = stripVTControlCharacters(stderr.text());
-    expect(text).toContain("CODEX SECURITY  ·  juice-shop");
+    expect(text).toContain("OPEN SECURITY  ·  juice-shop");
     expect(text).not.toContain("ACTIVITY");
     expect(text).not.toContain("events · live");
     expect(text).not.toContain("WORKERS");
@@ -876,7 +876,7 @@ describe("live scan dashboard", () => {
     });
 
     const raw = stderr.text();
-    expect(raw).toContain("\u001B[1m  CODEX SECURITY  ·  juice-shop\u001B[0m");
+    expect(raw).toContain("\u001B[1m  OPEN SECURITY  ·  juice-shop\u001B[0m");
     expect(raw).toContain(
       "\u001B[2m  [09:41:00] ✓ rg -n password routes/login.ts\u001B[0m",
     );

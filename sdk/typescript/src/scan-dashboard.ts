@@ -340,7 +340,8 @@ export class ScanDashboard {
     const model = this.#options.model;
 
     const lines = [
-      `  CODEX SECURITY  ·  ${basename(this.#options.repository)}${model === undefined ? "" : `  ·  ${model.model} (${model.reasoningEffort})`}`,
+      // open-models fork: renamed dashboard banner
+      `  OPEN SECURITY  ·  ${basename(this.#options.repository)}${model === undefined ? "" : `  ·  ${model.model} (${model.reasoningEffort})`}`,
       divider,
       ...activity,
       divider,

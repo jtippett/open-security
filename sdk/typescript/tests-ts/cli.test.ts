@@ -1122,7 +1122,7 @@ describe("CLI", () => {
       ),
     ).toBe(0);
     const text = stdout.text();
-    expect(text).toContain("CODEX SECURITY");
+    expect(text).toContain("OPEN SECURITY");
     expect(text).toContain("SCAN HISTORY");
     expect(text).toContain("juice-shop");
     for (const heading of ["DATE", "STATUS", "FINDINGS", "MODE", "SCAN"]) {
@@ -1202,7 +1202,7 @@ describe("CLI", () => {
         ),
       ).toBe(0);
       const text = stripVTControlCharacters(stdout.text());
-      expect(text).toContain("CODEX SECURITY");
+      expect(text).toContain("OPEN SECURITY");
       expect(text).toContain("SCAN DETAILS");
       expect(text).toContain("juice-shop");
       expect(text).toContain("scan-1");
@@ -1320,7 +1320,7 @@ describe("CLI", () => {
     ).toBe(0);
     expect(redirected.text()).toContain("internal-finding-id");
     expect(redirected.text()).toContain("status: unknown");
-    expect(redirected.text()).not.toContain("CODEX SECURITY");
+    expect(redirected.text()).not.toContain("OPEN SECURITY");
 
     const filtered = capture(true);
     expect(
@@ -1333,7 +1333,7 @@ describe("CLI", () => {
     ).toBe(0);
     expect(filtered.text()).toContain("persisting: 1");
     expect(filtered.text()).not.toContain("internal-finding-id");
-    expect(filtered.text()).not.toContain("CODEX SECURITY");
+    expect(filtered.text()).not.toContain("OPEN SECURITY");
   });
 
   test("prints SDK metadata without starting a scan", async () => {
@@ -1786,7 +1786,7 @@ describe("CLI", () => {
       expect(stderr.text()).toContain(
         "Running scan: reviewing files | Workers: 2/2 | Files: 3/8 | Tokens: 1,250 input, 200 cached, 30 output | Cost: $0.00625",
       );
-      expect(stderr.text()).not.toContain("CODEX SECURITY");
+      expect(stderr.text()).not.toContain("OPEN SECURITY");
       expect(stderr.text()).not.toContain("\u001B");
       expect(stderr.text()).not.toContain("\r");
       expect(timers).toBe(0);
@@ -1967,7 +1967,7 @@ describe("CLI", () => {
 
     const text = stripVTControlCharacters(stderr.text());
     expect(text).toContain(
-      "CODEX SECURITY  ·  juice-shop  ·  gpt-5.6-terra (low)",
+      "OPEN SECURITY  ·  juice-shop  ·  gpt-5.6-terra (low)",
     );
     expect(text).not.toContain("ACTIVITY");
     expect(text).not.toContain("events · live");

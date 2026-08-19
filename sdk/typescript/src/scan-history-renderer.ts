@@ -76,7 +76,8 @@ export function renderScanHistory(
   };
   const lines = [
     "",
-    `  ${accent("◆")} ${strong("CODEX SECURITY")}  ${accent("/")}  ${strong(labels[command])}`,
+    // open-models fork: renamed history banner
+    `  ${accent("◆")} ${strong("OPEN SECURITY")}  ${accent("/")}  ${strong(labels[command])}`,
     `  ${accent("━".repeat(width - 4))}`,
   ];
 
