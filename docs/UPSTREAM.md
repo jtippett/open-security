@@ -51,15 +51,30 @@ Every fork hunk in an upstream file is marked with a comment containing
 Keep it that way: when adding fork behaviour, prefer a new file, and when an
 upstream file must change, keep the hunk small, self-contained, and marked.
 
-The rename is deliberately shallow: only durable names changed (npm package,
-`bin/open-security.mjs` launcher, the CLI program name in `Cli.create`, the
-container's CLI invocations, and command names users type or docs show).
-Internal identifiers keep upstream's `codex-security` — stderr message
-prefixes, config/state paths (`~/.codex/codex-security/`,
-`CODEX_SECURITY_*`), the plugin name and its MCP server key, compose service
-names, contract document types, and the legacy pre-commit hook detection
-string. Renaming those would churn hundreds of upstream lines for no
-functional gain.
+The rename covers everything a user sees, and nothing functional:
+
+- Renamed: the npm package (`open-source-security`), the
+  `bin/open-security.mjs` launcher and CLI program name in `Cli.create`, the
+  container's CLI invocations, command names in docs, the TUI banners
+  (`OSS`), the brand phrase "Codex Security" → "Open Security" in help text
+  and messages, and the stderr prefix `codex-security: ` →
+  `open-security: `.
+- Kept upstream: config/state paths (`~/.codex/codex-security/`,
+  `CODEX_SECURITY_*` environment variables), the plugin name and its MCP
+  server key, compose service names, contract document types, the legacy
+  pre-commit hook detection string, and references to the Codex runtime
+  itself. Renaming those would break state compatibility for no gain.
+
+After a merge brings in new upstream strings, re-apply the string rename
+mechanically and review the diff:
+
+```bash
+cd sdk/typescript
+LC_ALL=C sed -i '' -e 's/Codex Security/Open Security/g' \
+  -e 's/codex-security: /open-security: /g' \
+  -e 's/CODEX SECURITY/OSS/g' src/*.ts src/*.tsx tests-ts/*.ts
+git diff  # revert hits inside contract ids, env vars, or paths
+```
 
 ## Routine check
 
