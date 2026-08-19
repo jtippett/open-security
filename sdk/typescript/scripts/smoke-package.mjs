@@ -444,7 +444,8 @@ try {
   assert.equal(publication.dryRun, true);
   assert.equal(publication.counts.findings, 1);
   assert.equal(publication.counts.created, 0);
-  assert.match(publication.issues[0].title, /^\[Codex Security\]\[HIGH\] /u);
+  // open-models fork: renamed issue-title prefix
+  assert.match(publication.issues[0].title, /^\[Open Security\]\[HIGH\] /u);
 
   const networkGuard = join(consumer, "reject-publication-network.cjs");
   await writeFile(
