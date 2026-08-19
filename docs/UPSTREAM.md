@@ -60,15 +60,34 @@ names, contract document types, and the legacy pre-commit hook detection
 string. Renaming those would churn hundreds of upstream lines for no
 functional gain.
 
+## Routine check
+
+Run this weekly (or whenever GitHub notifies about upstream — watch
+[openai/codex-security](https://github.com/openai/codex-security) with
+**Watch → Custom → Releases** for a zero-effort signal):
+
+```bash
+git fetch upstream --tags --quiet
+git rev-list --count main..upstream/main          # how far behind
+git log --oneline main..upstream/main             # what changed
+git diff main...upstream/main --stat -- \
+  sdk/typescript/src/config.ts sdk/typescript/src/cli.ts \
+  sdk/typescript/src/cost.ts sdk/typescript/src/api.ts \
+  sdk/typescript/package.json                     # touches to fork-hunk files
+```
+
+Decide from the log:
+
+- **`release:` commits present** → sync now; the fork should not sit more
+  than one upstream release behind.
+- **Only docs/CI/Windows-fix noise and no fork-hunk files touched** → fine
+  to defer, note it and move on.
+- **Changes under `_bundled_plugin`** → check the two interfaces the fork
+  depends on (see step 3 below) before assuming the sync is routine.
+
 ## Update procedure
 
-1. Fetch and inspect what changed upstream, especially in the files above:
-
-   ```bash
-   git fetch upstream --tags
-   git log --oneline main..upstream/main
-   git diff main...upstream/main --stat -- sdk/typescript/src/config.ts sdk/typescript/src/cli.ts sdk/typescript/src/cost.ts sdk/typescript/package.json
-   ```
+1. Fetch and inspect what changed upstream (the routine check above).
 
 2. Merge (not rebase, so published history stays stable):
 
@@ -126,10 +145,3 @@ fork); `repository`/`bugs` URLs in `sdk/typescript/package.json` point at
 [jtippett/open-security](https://github.com/jtippett/open-security).
 If the fork is ever published to npm, revisit
 `scripts/release-automation.mjs`, which currently accepts both package names.
-
-## Still pending
-
-- Flip `DEFAULT_MODEL_BY_PROVIDER.openrouter` to GLM 5.3 once it is listed on
-  OpenRouter (check with
-  `curl -s https://openrouter.ai/api/v1/models | grep glm-5.3`), then
-  `pnpm generate:pricing` and update the model table in `README.md`.
