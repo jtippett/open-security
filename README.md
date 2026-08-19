@@ -59,7 +59,7 @@ From the repository you want to scan:
 open-security scan .
 ```
 
-That runs a standard scan with `z-ai/glm-5.2` at the default reasoning effort
+That runs a standard scan with `z-ai/glm-5.3` at the default reasoning effort
 and prints a findings report when it completes. Expect roughly 10–40 minutes
 depending on repository size and model speed — open models are slower than
 the upstream OpenAI path, so let it run. Useful variations:
@@ -77,7 +77,8 @@ our testing:
 
 | Model             | `--model` id               | Notes                                                                         |
 | ----------------- | -------------------------- | ----------------------------------------------------------------------------- |
-| GLM 5.2 (default) | `z-ai/glm-5.2`             | Good quality for the price; will move to GLM 5.3 when it lands on OpenRouter. |
+| GLM 5.3 (default) | `z-ai/glm-5.3`             | Best quality in the GLM line.                                                 |
+| GLM 5.2           | `z-ai/glm-5.2`             | Good quality, slightly cheaper.                                               |
 | DeepSeek V4 Pro   | `deepseek/deepseek-v4-pro` | Followed the scan contract unaided in testing; slower.                        |
 | Kimi K3           | `moonshotai/kimi-k3`       |                                                                               |
 | MiniMax M3        | `minimax/minimax-m3`       |                                                                               |
@@ -116,7 +117,7 @@ use; select one explicitly with `--auth chatgpt` or `--auth api-key`.
 ## How this fork differs from upstream
 
 - `scan`, `validate`, and `patch` default to
-  `--provider openrouter --model z-ai/glm-5.2`.
+  `--provider openrouter --model z-ai/glm-5.3`.
 - Open models do not always meet the scan output contract on the first pass.
   For external providers the CLI appends contract guidance to the scan prompt,
   validates the draft output with the plugin's own finalizer, and asks the same

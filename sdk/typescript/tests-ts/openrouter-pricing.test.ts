@@ -14,7 +14,7 @@ describe("OpenRouter pricing catalog", () => {
   };
 
   test("has well-formed rows for the default open models", () => {
-    for (const model of ["z-ai/glm-5.2", "deepseek/deepseek-v4-pro"]) {
+    for (const model of ["z-ai/glm-5.3", "deepseek/deepseek-v4-pro"]) {
       const rates = OPENROUTER_MODEL_PRICING_NANODOLLARS[model];
       expect(rates).toBeDefined();
       expect(rates).toHaveLength(4);
@@ -27,8 +27,8 @@ describe("OpenRouter pricing catalog", () => {
 
   test("estimates cost for OpenRouter model ids", () => {
     const [input, , , output] =
-      OPENROUTER_MODEL_PRICING_NANODOLLARS["z-ai/glm-5.2"]!;
-    const cost = estimateScanCost("z-ai/glm-5.2", usage);
+      OPENROUTER_MODEL_PRICING_NANODOLLARS["z-ai/glm-5.3"]!;
+    const cost = estimateScanCost("z-ai/glm-5.3", usage);
     expect(cost).not.toBeNull();
     expect(cost!.estimatedUsd).toBeCloseTo((input + output) / 1_000, 6);
   });

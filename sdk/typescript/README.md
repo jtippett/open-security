@@ -17,7 +17,7 @@ else on OpenRouter) by default. Everything upstream supports still works.
 [repository README](../../README.md#getting-started).**
 
 - `scan .`, `validate`, and `patch` default to
-  `--provider openrouter --model z-ai/glm-5.2`. Set `OPENROUTER_API_KEY`; no
+  `--provider openrouter --model z-ai/glm-5.3`. Set `OPENROUTER_API_KEY`; no
   OpenAI account or ChatGPT sign-in is needed.
 - Pick any OpenRouter model id with `--model`, for example
   `deepseek/deepseek-v4-pro`, `moonshotai/kimi-k3`, `minimax/minimax-m3`, or
@@ -501,7 +501,7 @@ Variables such as `CODEX_SECURITY_SCAN_ID`, `CODEX_SECURITY_SCAN_DIR`,
 internal runtime data, not supported user configuration.
 
 OpenRouter is the default provider in this fork. Set `OPENROUTER_API_KEY`;
-`--model` defaults to `z-ai/glm-5.2` and accepts any OpenRouter model id.
+`--model` defaults to `z-ai/glm-5.3` and accepts any OpenRouter model id.
 Use `--provider openai` for the upstream OpenAI/ChatGPT defaults.
 
 Use `--provider fireworks` to send inference through Fireworks AI. Set

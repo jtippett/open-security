@@ -821,7 +821,7 @@ describe("CLI", () => {
             ),
           ).toBe(0);
           expect(config?.codexOverrides).toMatchObject({
-            model: "z-ai/glm-5.2",
+            model: "z-ai/glm-5.3",
             model_provider: provider,
             model_providers: { [provider]: providerConfig },
           });
@@ -2163,7 +2163,7 @@ describe("CLI", () => {
     expect(help.text()).toContain(
       "--provider <openai|openrouter|fireworks|amazon-bedrock>",
     );
-    expect(help.text()).toContain("Model to use (default: z-ai/glm-5.2).");
+    expect(help.text()).toContain("Model to use (default: z-ai/glm-5.3).");
     expect(help.text()).toContain(
       "Inference provider for scans (default: openrouter).",
     );
@@ -2201,7 +2201,7 @@ describe("CLI", () => {
     ).toBe(0);
     expect(help.text()).toContain("--model <string>");
     expect(help.text()).toContain(
-      "Model for each repository (default: z-ai/glm-5.2).",
+      "Model for each repository (default: z-ai/glm-5.3).",
     );
     expect(help.text()).toContain(
       "Inference provider for scans (default: openrouter).",
@@ -2476,7 +2476,7 @@ describe("CLI", () => {
     ).toThrow("--effort conflicts with --codex model_reasoning_effort");
     expect(parseCodexOverrides([], undefined, undefined, "openrouter")).toEqual(
       {
-        model: "z-ai/glm-5.2",
+        model: "z-ai/glm-5.3",
         model_provider: "openrouter",
         model_providers: { openrouter: OPENROUTER_CODEX_PROVIDER },
       },

@@ -11,7 +11,7 @@ import {
 import { capture, dependencies } from "./cli-fixtures.js";
 
 const OPENROUTER_DEFAULTS = {
-  model: "z-ai/glm-5.2",
+  model: "z-ai/glm-5.3",
   model_provider: "openrouter",
   model_providers: { openrouter: OPENROUTER_CODEX_PROVIDER },
 };
@@ -93,10 +93,10 @@ describe("open-models defaults", () => {
     expect(DEFAULT_MODEL_PROVIDER).toBe("openrouter");
     expect(DEFAULT_MODEL_BY_PROVIDER).toEqual({
       openai: "gpt-5.6-sol",
-      openrouter: "z-ai/glm-5.2",
+      openrouter: "z-ai/glm-5.3",
     });
     expect(defaultModelForProvider("openai")).toBe("gpt-5.6-sol");
-    expect(defaultModelForProvider("openrouter")).toBe("z-ai/glm-5.2");
+    expect(defaultModelForProvider("openrouter")).toBe("z-ai/glm-5.3");
     expect(defaultModelForProvider("fireworks")).toBeUndefined();
     expect(defaultModelForProvider("amazon-bedrock")).toBeUndefined();
   });
@@ -149,7 +149,7 @@ describe("open-models defaults", () => {
         dependencies(),
       ),
     ).toBe(0);
-    expect(stdout.text()).toContain("Model to use (default: z-ai/glm-5.2).");
+    expect(stdout.text()).toContain("Model to use (default: z-ai/glm-5.3).");
     expect(stdout.text()).toContain(
       "Inference provider for scans (default: openrouter).",
     );
@@ -185,7 +185,7 @@ describe("open-models defaults for validation and patching", () => {
           }),
         ),
       ).toBe(0);
-      expect(invocation).toContain('model="z-ai/glm-5.2"');
+      expect(invocation).toContain('model="z-ai/glm-5.3"');
       expect(invocation).toContain('model_provider="openrouter"');
       expect(invocation).toContain(
         'model_providers.openrouter={ name = "OpenRouter", base_url = "https://openrouter.ai/api/v1", env_key = "OPENROUTER_API_KEY", wire_api = "responses" }',

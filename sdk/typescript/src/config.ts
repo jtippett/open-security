@@ -68,7 +68,7 @@ export const DEFAULT_MODEL_BY_PROVIDER: Readonly<
   Partial<Record<ScanModelProviderName, string>>
 > = {
   openai: "gpt-5.6-sol",
-  openrouter: "z-ai/glm-5.2",
+  openrouter: "z-ai/glm-5.3",
 };
 
 export function defaultModelForProvider(
