@@ -172,6 +172,9 @@ const distFiles = new Set(
     "knowledge-base",
     "models",
     "multiscan",
+    // open-models fork: fork-owned modules shipped in dist
+    "open-models",
+    "openrouter-pricing",
     "result",
     "runtime",
     "scan-activity",

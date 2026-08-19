@@ -15,7 +15,6 @@ sign-in. Everything upstream supports still works — see
 ### 1. Prerequisites
 
 - **Node.js** 22.13+, 24.x, or 26.x
-- **pnpm** (`corepack enable` turns it on if you have Node but not pnpm)
 - **Python** 3.10 or later (3.10 also needs `tomli`)
 - An **OpenRouter API key** with some credit — create one at
   [openrouter.ai/keys](https://openrouter.ai/settings/keys). A standard scan of
@@ -23,7 +22,11 @@ sign-in. Everything upstream supports still works — see
 
 ### 2. Install
 
-The fork is not published to npm, so install it from this repository:
+```bash
+npm install -g open-security
+```
+
+Or from this repository (needs pnpm; `corepack enable` turns it on):
 
 ```bash
 git clone https://github.com/jtippett/open-security.git

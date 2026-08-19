@@ -43,7 +43,7 @@ Every fork hunk in an upstream file is marked with a comment containing
 | `sdk/typescript/src/index.ts`                                                                               | exports the fork's provider helpers (`applyDefaultModelProvider` and friends).                                                                                                                                                                                                                                                                                            |
 | `sdk/typescript/src/version.ts`                                                                             | `PACKAGE_NAME` is the fork name (drives update notices).                                                                                                                                                                                                                                                                                                                  |
 | `sdk/typescript/src/scan-dashboard.ts`, `src/scan-history-renderer.ts`                                      | the TUI banners read `OPEN SECURITY` (tests asserting the banner string updated to match).                                                                                                                                                                                                                                                                               |
-| `sdk/typescript/scripts/check-package.mjs`, `scripts/release-automation.mjs`                                | package-name checks accept `open-security` (release automation accepts both names so its upstream tests keep passing).                                                                                                                                                                                                                                                    |
+| `sdk/typescript/scripts/check-package.mjs`, `scripts/release-automation.mjs`                                | package-name checks accept `open-security`; the dist allowlist includes the fork modules `open-models` and `openrouter-pricing` (release automation accepts both names so its upstream tests keep passing).                                                                                                                                                                                                                                                    |
 | `sdk/typescript/tests-ts/update-notice.test.ts`                                                             | expected package name and registry URLs use the fork name.                                                                                                                                                                                                                                                                                                                |
 | `sdk/typescript/tests-ts/cli.test.ts`, `tests-ts/cli-authentication.test.ts`, `tests-ts/cli-skills.test.ts` | tests that assert OpenAI-specific behaviour pass `--provider openai`; help-text strings; the `--provider openrouter` without `--model` expectation; `validate --help` now lists `--provider`.                                                                                                                                                                             |
 | `README.md`, `sdk/typescript/README.md`                                                                     | root README restructured as a fork getting-started guide; package README renamed, from-source install, SDK OpenRouter example. Expect conflicts; keep upstream's new content and re-apply the fork framing.                                                                                                                                                               |
@@ -137,12 +137,24 @@ Decide from the log:
 
 ## Releasing
 
-Upstream publishes `@openai/codex-security`; this fork's package and installed
-command are both named `open-security`. The
-fork is not published to npm — the READMEs document a from-source install. The
-`.github/workflows` release pipeline still targets the upstream name and repo
-(`github.repository == 'openai/codex-security'` guards make it a no-op on the
-fork); `repository`/`bugs` URLs in `sdk/typescript/package.json` point at
+Upstream publishes `@openai/codex-security`; this fork publishes
+[`open-security`](https://www.npmjs.com/package/open-security) (the installed
+command has the same name). Releases are manual, from a clean `main` checkout:
+
+```bash
+cd sdk/typescript
+pnpm install --frozen-lockfile && pnpm run test
+pnpm pack                                  # runs the build via prepack
+pnpm run check:package ./open-security-<version>.tgz
+npm publish ./open-security-<version>.tgz  # as the jtippett npm account
+```
+
+Keep the fork's `version` in `sdk/typescript/package.json` equal to the
+upstream release the code is based on, so a published fork version always maps
+to an upstream baseline. The `.github/workflows` release pipeline still
+targets the upstream name and repo (`github.repository ==
+'openai/codex-security'` guards make it a no-op on the fork);
+`repository`/`bugs` URLs in `sdk/typescript/package.json` point at
 [jtippett/open-security](https://github.com/jtippett/open-security).
-If the fork is ever published to npm, revisit
-`scripts/release-automation.mjs`, which currently accepts both package names.
+`scripts/release-automation.mjs` accepts both package names so upstream's
+tests keep passing.

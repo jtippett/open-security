@@ -39,15 +39,18 @@ else on OpenRouter) by default. Everything upstream supports still works.
 
 ## Install
 
-The fork is not published to npm; install it from a checkout of this
-repository:
+```bash
+npm install -g open-security
+open-security --version
+```
+
+Or from a checkout of this repository:
 
 ```bash
 cd sdk/typescript
 pnpm install
 pnpm run build
 npm install -g .
-open-security --version
 ```
 
 The package supports macOS, Linux, and Windows and requires Node.js 22.13.0 or
