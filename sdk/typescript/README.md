@@ -40,9 +40,12 @@ else on OpenRouter) by default. Everything upstream supports still works.
 ## Install
 
 ```bash
-npm install -g open-security
+npm install -g open-source-security
 open-security --version
 ```
+
+(The npm package is `open-source-security`; the installed command is
+`open-security`.)
 
 Or from a checkout of this repository:
 

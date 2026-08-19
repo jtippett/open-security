@@ -238,7 +238,7 @@ const packageJson = JSON.parse(
   archiveFile("package/package.json").toString("utf8"),
 );
 if (
-  packageJson.name !== "open-security" /* open-models fork */ ||
+  packageJson.name !== "open-source-security" /* open-models fork */ ||
   packageJson.license !== "Apache-2.0"
 ) {
   throw new Error("npm package does not contain the expected public metadata.");

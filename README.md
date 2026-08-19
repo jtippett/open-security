@@ -23,10 +23,12 @@ sign-in. Everything upstream supports still works — see
 ### 2. Install
 
 ```bash
-npm install -g open-security
+npm install -g open-source-security
 ```
 
-Or from this repository (needs pnpm; `corepack enable` turns it on):
+(The npm package is `open-source-security`; the installed command is
+`open-security`.) Or from this repository (needs pnpm; `corepack enable`
+turns it on):
 
 ```bash
 git clone https://github.com/jtippett/open-security.git

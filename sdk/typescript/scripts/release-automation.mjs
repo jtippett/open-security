@@ -6,7 +6,7 @@ import { assertExpectedGitHead } from "./package-provenance.mjs";
 
 const packageName = "@openai/codex-security";
 // open-models fork: releases of the renamed package are accepted too.
-const forkPackageName = "open-security";
+const forkPackageName = "open-source-security";
 const stableVersion = /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/u;
 const provenancePredicate = "https://slsa.dev/provenance/v1";
 const publicNpmRegistry = "https://registry.npmjs.org/";

@@ -24,12 +24,12 @@ describe("CLI update notice", () => {
     });
 
     expect(requestedUrl).toBe(
-      "https://registry.npmjs.org/open-security/latest",
+      "https://registry.npmjs.org/open-source-security/latest",
     );
     expect(notice).toEqual({
       currentVersion: "0.1.0",
       latestVersion: "0.2.0",
-      command: "npx open-security@latest",
+      command: "npx open-source-security@latest",
     });
   });
 
@@ -45,7 +45,7 @@ describe("CLI update notice", () => {
     });
 
     expect(requestedUrl).toBe(
-      "https://registry.example.test/npm/open-security/latest",
+      "https://registry.example.test/npm/open-source-security/latest",
     );
   });
 
@@ -74,7 +74,7 @@ describe("CLI update notice", () => {
 
   test("recognizes npx and local or global npm, pnpm, Yarn, and Bun", () => {
     const installed = "/workspace/node_modules/pkg/dist/version.js";
-    const packageName = "open-security@latest";
+    const packageName = "open-source-security@latest";
 
     for (const [environment, entrypoint, command] of [
       [{ npm_command: "exec" }, installed, `npx ${packageName}`],
@@ -196,7 +196,7 @@ describe("CLI update notice", () => {
     const notice = {
       currentVersion: "0.1.0",
       latestVersion: "0.2.0",
-      command: "npm install -g open-security@latest",
+      command: "npm install -g open-source-security@latest",
     };
 
     expect(
